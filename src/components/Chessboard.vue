@@ -10,7 +10,7 @@
                     offset: (i+j) % 2 == 1,
                 }">
                 <p v-if="j==1" class="rank">{{i}}</p>
-                <p v-if="i==8" class="file">{{String.fromCharCode(96 + (9-j))}}</p>
+                <p v-if="i==height" class="file">{{String.fromCharCode(96 + (1+width-j))}}</p>
             </div>  
         </div> 
     </div>
@@ -33,6 +33,8 @@ export default {
     width: 100%;
     display: flex;
     flex-direction: column;
+    border-radius: 8px;
+    overflow: hidden;
 }
 
 .c-chessboard__row {
@@ -53,7 +55,8 @@ export default {
 
 .rank, .file {
     color: #779954;
-    font-size: 20px;
+    font-size: 24px;
+    font-weight: 500;
 }
 
 .offset .rank, .offset .file {

@@ -5,8 +5,8 @@
         <v-list-item title="Navigation drawer"></v-list-item>
       </v-list>
     </v-navigation-drawer>
-    <v-main>
-      <Chessboard :width="8" :height="8" />
+    <v-main class="content-center grid">
+      <Chessboard class="justify-self-center" :width="8" :height="8" />
     </v-main>
   </v-app>
 </template>

@@ -9,8 +9,13 @@
       </div>
       
     </v-navigation-drawer>
-    <v-main class="content-center grid">
-      <Chessboard class="justify-self-center" :width="Math.min(parseInt(width), 8)" :height="Math.min(parseInt(height), 8)" />
+    <v-main class="flex content-center justify-items-center items-center">
+      <div class="flex flex-col gap-4 items-center w-40">
+        <Chesspiece v-for="chesspiece in chesspieces" :piece="chesspiece"/>
+      </div>
+      <div class="grow flex flex-col items-center">
+        <Chessboard :width="Math.min(parseInt(width), 8)" :height="Math.min(parseInt(height), 8)" />
+      </div>
     </v-main>
   </v-app>
 </template>
@@ -18,7 +23,10 @@
 <script setup>
 import {ref} from 'vue'
 import Chessboard from '@/components/Chessboard.vue'
+import Chesspiece from '@/components/Chesspiece.vue'
+
 let width = ref("8"), height = ref("8")
+let chesspieces = ['player', 'pawn', 'knight', 'bishop', 'rook', 'queen']
 
 function validateWidthAndHeight(value) {
   return value > 0 && value <= 8;

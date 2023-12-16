@@ -11,7 +11,7 @@
     </v-navigation-drawer>
     <v-main class="flex content-center justify-items-center items-center">
       <div class="flex flex-col gap-4 items-center w-40">
-        <Chesspiece v-for="chesspiece in chesspieces" :piece="chesspiece"/>
+        <Chesspiece v-for="chesspiece in chesspieces" :piece="chesspiece" :key="chesspiece" :piece-holder-key="chesspiece+'Prefab'" is-factory/>
       </div>
       <div class="grow flex flex-col items-center">
         <Chessboard :width="Math.min(parseInt(width), 8)" :height="Math.min(parseInt(height), 8)" />

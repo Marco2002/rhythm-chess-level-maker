@@ -9,6 +9,8 @@
                 :class="{
                     offset: (i+j) % 2 == 1,
                 }">
+                <Chesspiece piece="none" :piece-holder-key="`piece${i}-${j}`"/>
+                
                 <p v-if="j==1" class="rank">{{i}}</p>
                 <p v-if="i==height" class="file">{{String.fromCharCode(96 + (1+width-j))}}</p>
             </div>  
@@ -16,14 +18,14 @@
     </div>
 </template>
 
-<script>
-export default {
-    name: 'Chessboard',
-    props: {
-        width: Number,
-        height: Number,
-    }
-}
+<script setup>
+import Chesspiece from '@/components/Chesspiece.vue';
+
+const props = defineProps({
+    width: Number,
+    height: Number,
+})
+
 </script>
 
 <style>

@@ -1,30 +1,28 @@
 <template>
     <div class="c-chessboard" :style="{
-        width: width*100 +'px',
-        height: height*100+'px'
+        width: store.width*100 +'px',
+        height: store.height*100+'px'
     }">
-        <div v-for="i in height" v-bind:key="i" class="c-chessboard__row">
-            <div v-for="j in width" v-bind:key="j" 
+        <div v-for="y in (store.height * 1)" v-bind:key="y" class="c-chessboard__row">
+            <div v-for="x in (store.width * 1)" v-bind:key="y*10+x" 
                 class="c-chessboard__tile"
                 :class="{
-                    offset: (i+j) % 2 == 1,
+                    offset: (y+x) % 2 == 1,
                 }">
-                <Chesspiece piece="none" :piece-holder-key="`piece${i}-${j}`"/>
+                <Chesspiece :x="x-1" :y="y-1" :piece-holder-key="`piece${x}-${y}`"/>
                 
-                <p v-if="j==1" class="rank">{{i}}</p>
-                <p v-if="i==height" class="file">{{String.fromCharCode(96 + (1+width-j))}}</p>
+                <p v-if="x==1" class="rank">{{y}}</p>
+                <p v-if="y==store.height" class="file">{{String.fromCharCode(96 + (1+store.width*1-x))}}</p>
             </div>  
         </div> 
     </div>
 </template>
 
 <script setup>
+import { useStore } from '@/store'
 import Chesspiece from '@/components/Chesspiece.vue';
 
-const props = defineProps({
-    width: Number,
-    height: Number,
-})
+let store = useStore()
 
 </script>
 

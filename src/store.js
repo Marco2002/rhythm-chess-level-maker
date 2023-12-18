@@ -80,14 +80,25 @@ export const useStore = defineStore('counter', () => {
         }
         fen.value = ranks.join('/')
     })
+    // TODO make the adaptation of the fen work for bigger steps than a change by '1'
     watch(width, (newWidth, oldWidth) => {
         let ranks = fen.value.split('/')
         if(newWidth < oldWidth) { // width was reduced
             ranks = ranks.map(rank => {
-                if(rank.charAt(rank.length-1) >= '2' && rank.charAt(rank.length-1) <= '9') {
-                    return rank.substring(0, rank.length-1) + (rank.charAt(rank.length-1) - 1)
+                if(rank.charAt(0) >= '2' && rank.charAt(0) <= '9') {
+                    return (rank.charAt(0) - 1) + rank.substring(1)
                 } else {
-                    return rank.substring(0, rank.length-1)
+                    return rank.substring(1)
+                }
+            })
+            disabledFields.value = disabledFields.value.filter(field => field[0]*1 < width.value) // remove disabled fields outside of new height
+            flagRegion.value = flagRegion.value.filter(field => field[0]*1 < width.value) // remove flag region fields outside of new height
+        } else if(newWidth > oldWidth){
+            ranks = ranks.map(rank => {
+                if(rank.charAt(0) >= '1' && rank.charAt(0) <= '9') {
+                    return (rank.charAt(0)*1 + 1) + rank.substring(1)
+                } else {
+                    return '1' + rank
                 }
             })
         }

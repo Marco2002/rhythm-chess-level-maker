@@ -62,7 +62,7 @@ let store = useStore()
 }
 
 .c-chessboard__tile.flag {
-    background-color: #779954
+    background-color: #779954;
 }
 
 

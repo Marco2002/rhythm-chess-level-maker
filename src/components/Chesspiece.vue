@@ -44,7 +44,8 @@ let piece
 if(props.piece) {
     piece = ref(props.piece)
 } else {
-    piece = ref(store.position[props.y][props.x])
+    if(store.position.length < store.height || store.position[0].length < store.width) piece = ref('none')
+    else piece = ref(store.position[props.y][props.x])
 }
 
 let pieceArr = ref([piece])

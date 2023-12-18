@@ -4,11 +4,12 @@
       
       <div class="pa-8">
         <h2 class="text-center pb-4">Configuration</h2>
+        <v-text-field label="level name" variant="outlined" v-model="store.levelName"></v-text-field>
         <v-text-field class="inline-block w-1/2 pr-2" label="width" type="number" :rules="[validateWidthAndHeight]" :min="1" :max="8" variant="outlined" v-model="store.width"></v-text-field>
         <v-text-field class="inline-block w-1/2 pl-2" label="height" type="number" :rules="[validateWidthAndHeight]" :min="1" :max="8" variant="outlined" v-model="store.height"></v-text-field>
         <v-text-field label="fen" variant="outlined" v-model="store.fen" disabled></v-text-field>
-        <v-text-field label="disabled fields" variant="outlined" v-model="store.disabledFields" disabled></v-text-field>
-        <v-text-field label="flag region" variant="outlined" v-model="store.flagRegion" disabled></v-text-field>
+        <v-text-field label="disabled fields" variant="outlined" v-model="store.getNamedDisabledFields" disabled></v-text-field>
+        <v-text-field label="flag region" variant="outlined" v-model="store.getNamedFlagRegion" disabled></v-text-field>
       </div>
       
     </v-navigation-drawer>

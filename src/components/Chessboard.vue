@@ -16,7 +16,7 @@
                 <Chesspiece :x="x-1" :y="y-1" :piece-holder-key="`piece${x}-${y}`"/>
                 
                 <p v-if="x==1" class="rank">{{y}}</p>
-                <p v-if="y==store.height" class="file">{{String.fromCharCode(96 + (1+store.width*1-x))}}</p>
+                <p v-if="y==store.height" class="file">{{String.fromCharCode(97 + (store.width*1-x))}}</p>
             </div>  
         </div> 
     </div>

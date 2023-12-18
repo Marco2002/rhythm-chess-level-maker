@@ -1,55 +1,32 @@
 import { defineStore } from 'pinia'
-import { ref, watch } from 'vue'
-
-const files = ['h', 'g', 'f', 'e', 'd', 'c', 'b', 'a']
-
-// helper functions
-function fenToPosition(fen, height, width) {
-    const position = Array.from({length: height}).map(() => Array.from({length: width}).fill('none'));
-    let ranks = fen.split('/');
-    for(let y = 0; y < height; y++) {
-        let x = width-1;
-        for(let i = 0; i < ranks[y].length; i++) {
-            if(ranks[y][i] >= '0' && ranks[y][i] <= '9') {
-                x -= parseInt(ranks[y][i])
-            } else {
-                position[height-1-y][x] = ranks[y][i];
-                x--;
-            }
-            
-        }
-    }
-    return position;
-}
-
-function positionToFen(position) {
-    let fen = "";
-    for(let y = position.length-1; y >= 0; y--) {
-        fen += "/";
-        let fieldsWithoutPiece = 0;
-        for(let x = position[0].length-1; x >= 0; x--) {
-            if (position[y][x] == 'none') fieldsWithoutPiece++;
-            else {
-                if (fieldsWithoutPiece > 0) fen += fieldsWithoutPiece;
-                fen += position[y][x];
-                fieldsWithoutPiece = 0;
-            }
-        }
-        if (fieldsWithoutPiece > 0) fen += fieldsWithoutPiece;
-    }
-    return fen.slice(1);
-}
+import { ref, watch, computed } from 'vue'
+import { fenToPosition, positionToFen, namedFieldToNumberedField, numberedFieldToNamedField} from '@/helperFunctions'
 
 export const useStore = defineStore('counter', () => {
     // props
-    const fen = ref('3a3/7/7/7/7/7/7/1PP4')
-    const width = ref('7')
+    const levelName = ref('level1')
+    const fen = ref('8/8/8/8/8/8/8/8')
+    const width = ref('8')
     const height = ref('8')
     const position = ref(fenToPosition(fen.value, height.value, width.value))
-    const disabledFields = ref(['00', '11'])
-    const flagRegion = ref(['03', '04'])
-    // getters 
+    const disabledFields = ref([])
+    const flagRegion = ref([])
 
+    // getters 
+    const getNamedDisabledFields = computed(() => {
+        const namedFields = []
+        disabledFields.value.forEach(field => {
+            namedFields.push(numberedFieldToNamedField(field, width.value))
+        })
+        return namedFields
+    })
+    const getNamedFlagRegion = computed(() => {
+        const namedFields = []
+        flagRegion.value.forEach(field => {
+            namedFields.push(numberedFieldToNamedField(field, width.value))
+        })
+        return namedFields
+    })
     // actions
     function setWidth(width) {
         this.width.value = width
@@ -92,9 +69,34 @@ export const useStore = defineStore('counter', () => {
     watch(fen, () => {
         position.value = fenToPosition(fen.value, height.value, width.value)
     })
+    watch(height, () => {
+        let ranks = fen.value.split('/')
+        if(ranks.length > height.value) { // height was reduced 
+            ranks = ranks.slice(Math.max(ranks.length - height.value, 0)) // adapt fen
+            disabledFields.value = disabledFields.value.filter(field => field[1]*1 < height.value) // remove disabled fields outside of new height
+            flagRegion.value = flagRegion.value.filter(field => field[1]*1 < height.value) // remove flag region fields outside of new height
+        } else if(ranks.length < height.value) { // height was increased
+            ranks.unshift(`${width.value}`)
+        }
+        fen.value = ranks.join('/')
+    })
+    watch(width, (newWidth, oldWidth) => {
+        let ranks = fen.value.split('/')
+        if(newWidth < oldWidth) { // width was reduced
+            ranks = ranks.map(rank => {
+                if(rank.charAt(rank.length-1) >= '2' && rank.charAt(rank.length-1) <= '9') {
+                    return rank.substring(0, rank.length-1) + (rank.charAt(rank.length-1) - 1)
+                } else {
+                    return rank.substring(0, rank.length-1)
+                }
+            })
+        }
+        fen.value = ranks.join('/')
+    })
 
     return {
-        fen, width, height, position, disabledFields, flagRegion,
+        levelName, fen, width, height, position, disabledFields, flagRegion,
+        getNamedDisabledFields, getNamedFlagRegion,
         setWidth, setHeight, removePiece, addPiece, toggleDisabled, toggleFlag
     }
 

@@ -40,17 +40,14 @@ function positionToFen(position) {
     return fen.slice(1);
 }
 
-function getFieldName(x, y) {
-    return files[x-1] + y;
-}
-
 export const useStore = defineStore('counter', () => {
     // props
     const fen = ref('3a3/7/7/7/7/7/7/1PP4')
     const width = ref('7')
     const height = ref('8')
     const position = ref(fenToPosition(fen.value, height.value, width.value))
-
+    const disabledFields = ref(['00', '11'])
+    const flagRegion = ref(['03', '04'])
     // getters 
 
     // actions
@@ -68,6 +65,28 @@ export const useStore = defineStore('counter', () => {
         position.value[y][x] = piece
         fen.value = positionToFen(position.value);
     }
+    function toggleDisabled(x, y) {
+        const fieldName = `${x}${y}`
+        if(flagRegion.value.includes(fieldName)) return;
+        
+        if(disabledFields.value.includes(fieldName)) {
+            const index = disabledFields.value.indexOf(fieldName)
+            disabledFields.value.splice(index, 1);
+        } else {
+            disabledFields.value.push(fieldName)
+        }
+    }
+    function toggleFlag(x, y) {      
+        const fieldName = `${x}${y}`
+        if(disabledFields.value.includes(fieldName)) return;
+
+        if(flagRegion.value.includes(fieldName)) {
+            const index = flagRegion.value.indexOf(fieldName)
+            flagRegion.value.splice(index, 1);
+        } else {
+            flagRegion.value.push(fieldName)
+        }
+    }
 
     // watchers
     watch(fen, () => {
@@ -75,8 +94,8 @@ export const useStore = defineStore('counter', () => {
     })
 
     return {
-        fen, width, height, position,
-        setWidth, setHeight, removePiece, addPiece
+        fen, width, height, position, disabledFields, flagRegion,
+        setWidth, setHeight, removePiece, addPiece, toggleDisabled, toggleFlag
     }
 
 })

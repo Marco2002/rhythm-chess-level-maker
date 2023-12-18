@@ -8,7 +8,11 @@
                 class="c-chessboard__tile"
                 :class="{
                     offset: (y+x) % 2 == 1,
-                }">
+                    disabled: store.disabledFields.includes(`${x-1}${y-1}`),
+                    flag: store.flagRegion.includes(`${x-1}${y-1}`)
+                }"
+                @click="store.toggleDisabled(x-1,y-1)"
+                @contextmenu="(e) => {e.preventDefault(), store.toggleFlag(x-1,y-1)}">
                 <Chesspiece :x="x-1" :y="y-1" :piece-holder-key="`piece${x}-${y}`"/>
                 
                 <p v-if="x==1" class="rank">{{y}}</p>
@@ -45,22 +49,31 @@ let store = useStore()
 
 .c-chessboard__tile {
     flex: 1 0;
-    background-color: #e9edcc;
+    background-color: #eae9d2;
     position: relative;
 }
 
 .c-chessboard__tile.offset {
-    background-color: #779954;
+    background-color: #4b7399;
 }
 
+.c-chessboard__tile.disabled {
+    background-color: transparent;
+}
+
+.c-chessboard__tile.flag {
+    background-color: #779954
+}
+
+
 .rank, .file {
-    color: #779954;
+    color: #4b7399;
     font-size: 24px;
     font-weight: 500;
 }
 
-.offset .rank, .offset .file {
-    color: #e9edcc;
+.offset .rank, .offset .file, .flag .rank, .flag .file {
+    color: #eae9d2;
 }
 
 .rank {
@@ -73,4 +86,5 @@ let store = useStore()
     bottom: 0;
     right: 8px;
 }
+
 </style>

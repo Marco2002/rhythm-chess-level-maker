@@ -19,6 +19,7 @@ const customTheme = {
     primary: '#4b7399',
     secondary: '#eae9d2',
     success: '#779954',
+    red: "#FF5c4E",
   }
 }
 export default createVuetify({
@@ -28,4 +29,9 @@ export default createVuetify({
       customTheme
     }
   },
+  defaults: {
+    VBtn: {
+      color: 'primary',
+    },
+  }
 })

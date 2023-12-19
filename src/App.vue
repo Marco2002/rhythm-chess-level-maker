@@ -5,11 +5,30 @@
       <div class="pa-8">
         <h2 class="text-center pb-4">Configuration</h2>
         <v-text-field label="level name" variant="outlined" v-model="store.levelName"></v-text-field>
-        <v-text-field class="inline-block w-1/2 pr-2" label="width" type="number" :rules="[validateWidthAndHeight]" :min="1" :max="8" variant="outlined" v-model="store.width"></v-text-field>
-        <v-text-field class="inline-block w-1/2 pl-2" label="height" type="number" :rules="[validateWidthAndHeight]" :min="1" :max="8" variant="outlined" v-model="store.height"></v-text-field>
+
+        <v-divider></v-divider>
+
+        <div class="flex items-center">
+          <v-text-field class="inline-block w-1/3 mt-6" label="width" type="number" variant="outlined" v-model="store.width" disabled></v-text-field>
+          <div class="inline-block w-1/6 text-center">
+            <v-btn class="mb-1" variant="text" density="compact" icon="mdi-plus" :disabled="store.width*1 >= 8" @click="store.width++"></v-btn>
+            <v-btn class="mt-1 text-red" variant="text" density="compact" icon="mdi-minus" :disabled="store.width*1 <= 1" @click="store.width--"></v-btn>
+          </div>
+          <v-text-field class="inline-block w-1/3 mt-6" label="height" type="number" variant="outlined" v-model="store.height" disabled></v-text-field>
+          <div class="inline-block w-1/6 text-center">
+            <v-btn class="mb-1" variant="text" density="compact" icon="mdi-plus" :disabled="store.height*1 >= 8" @click="store.height++"></v-btn>
+            <v-btn class="mt-1 text-red" variant="text" density="compact" icon="mdi-minus" :disabled="store.height*1 <= 1" @click="store.height--"></v-btn>
+          </div>
+        </div>
         <v-text-field label="fen" variant="outlined" v-model="store.fen" disabled></v-text-field>
         <v-text-field label="disabled fields" variant="outlined" v-model="store.getNamedDisabledFields" disabled></v-text-field>
         <v-text-field label="flag region" variant="outlined" v-model="store.getNamedFlagRegion" disabled></v-text-field>
+        <v-btn class="w-full my-2" variant="outlined">evaluate</v-btn>
+        <v-btn class="w-full my-2">generate file</v-btn>
+
+        <v-divider class="my-6"></v-divider>
+
+        <h2 class="text-center">Evaluation Result</h2>
       </div>
       
     </v-navigation-drawer>
@@ -19,6 +38,7 @@
       </div>
       <div class="grow flex flex-col items-center">
         <Chessboard />
+        
       </div>
     </v-main>
   </v-app>

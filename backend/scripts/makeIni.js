@@ -35,6 +35,7 @@ mobilityRegionWhiteQueen = ${mobilityRegion}
 mobilityRegionWhiteKing = ${mobilityRegion}
 mobilityRegionWhiteRook =  ${mobilityRegion}
 mobilityRegionBlackCustomPiece1 = ${mobilityRegion}
+immobilityIllegal = true
 
 passBlack = true
 passOnStalemateWhite = true

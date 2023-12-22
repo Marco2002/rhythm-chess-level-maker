@@ -23,16 +23,11 @@ wss.on('connection', function connection(ws) {
       const config = JSON.parse(msg.toString().substring(4))
       makeIni(config).then(() => {
         evaluate().then((res) => {
-          console.log('evaluation result:' + res)
+          if(res.split(' ')[0] == 'mate' && parseInt(res.split(' ')[1]) > 0) {
+            console.log('winnable')
+          }
         })
       }).catch(console.log)
     }
   }); 
 });
-
-// fs.watchFile('./input.json', (curr, prev) => {
-//     console.log("reloaded input.json")
-//     makeIni()
-//     const lastScore = evaluate()
-//     makeCsv()
-// });

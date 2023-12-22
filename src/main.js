@@ -7,7 +7,6 @@
 // Plugins
 import { registerPlugins } from '@/plugins'
 
-
 // Components
 import App from './App.vue'
 
@@ -16,6 +15,9 @@ import { createApp } from 'vue'
 
 // tailwind
 import './index.css'
+
+// init websocket
+import './socket'
 
 const app = createApp(App)
 

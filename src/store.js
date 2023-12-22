@@ -11,6 +11,7 @@ export const useStore = defineStore('counter', () => {
     const position = ref(fenToPosition(fen.value, height.value, width.value))
     const disabledFields = ref([])
     const flagRegion = ref([])
+    const beatable = ref('unkown')
 
     // getters 
     const getNamedDisabledFields = computed(() => {
@@ -80,7 +81,6 @@ export const useStore = defineStore('counter', () => {
         }
         fen.value = ranks.join('/')
     })
-    // TODO make the adaptation of the fen work for bigger steps than a change by '1'
     watch(width, (newWidth, oldWidth) => {
         let ranks = fen.value.split('/')
         if(newWidth < oldWidth) { // width was reduced
@@ -106,7 +106,7 @@ export const useStore = defineStore('counter', () => {
     })
 
     return {
-        levelName, fen, width, height, position, disabledFields, flagRegion,
+        levelName, fen, width, height, position, disabledFields, flagRegion, beatable,
         getNamedDisabledFields, getNamedFlagRegion,
         setWidth, setHeight, removePiece, addPiece, toggleDisabled, toggleFlag
     }

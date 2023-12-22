@@ -23,12 +23,21 @@
         <v-text-field label="fen" variant="outlined" v-model="store.fen" disabled></v-text-field>
         <v-text-field label="disabled fields" variant="outlined" v-model="store.getNamedDisabledFields" disabled></v-text-field>
         <v-text-field label="flag region" variant="outlined" v-model="store.getNamedFlagRegion" disabled></v-text-field>
-        <v-btn class="w-full my-2" variant="outlined">evaluate</v-btn>
-        <v-btn class="w-full my-2">generate file</v-btn>
+        <v-btn class="w-full my-2" variant="outlined" @click="evaluate">evaluate</v-btn>
+        <v-btn class="w-full my-2" @click="generate">generate file</v-btn>
 
         <v-divider class="my-6"></v-divider>
 
-        <h2 class="text-center">Evaluation Result</h2>
+        <h2 class="text-center pb-4">Evaluation Result</h2>
+        <div class="text-center">
+          <v-chip 
+            :prepend-icon="beatableIcon"
+            :class="beatableColor"
+          >
+            Beatable
+          </v-chip>
+        </div>
+        
       </div>
       
     </v-navigation-drawer>
@@ -45,10 +54,11 @@
 </template>
 
 <script setup>
-import {ref} from 'vue'
+import { ref, computed } from 'vue'
 import Chessboard from '@/components/Chessboard.vue'
 import Chesspiece from '@/components/Chesspiece.vue'
 import { useStore } from '@/store'
+import { requestEvaluate, requestGenerate } from './socket'
 
 const store = useStore()
 
@@ -57,4 +67,35 @@ let chesspieces = ['a', 'P', 'N', 'B', 'R', 'Q']
 function validateWidthAndHeight(value) {
   return value > 0 && value <= 8;
 }
+
+function evaluate() {
+  const config = {
+    levelName: store.levelName,
+    fen: store.fen,
+    maxRank: store.height,
+    maxFile: store.width,
+    disabledFields: store.getNamedDisabledFields,
+    flagRegion: store.getNamedFlagRegion,
+  }
+  requestEvaluate(config)
+}
+
+function generate() {
+  const config = {
+    levelName: store.levelName,
+    fen: store.fen,
+    maxRank: store.height,
+    maxFile: store.width,
+    disabledFields: store.getNamedDisabledFields,
+    flagRegion: store.getNamedFlagRegion,
+  }
+  requestGenerate(config)
+}
+
+const beatableIcon = computed(() => {
+  return store.beatable === 'unkown' ? 'mdi-circle-outline' : ( store.beatable ? 'mdi-check-circle' : 'mdi-close-circle')
+})
+const beatableColor = computed(() => {
+  return store.beatable === 'unkown' ? '' : ( store.beatable ? 'text-green' : 'text-red')
+})
 </script>

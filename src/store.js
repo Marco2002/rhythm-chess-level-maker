@@ -1,6 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, watch, computed } from 'vue'
 import { fenToPosition, positionToFen, namedFieldToNumberedField, numberedFieldToNamedField} from '@/helperFunctions'
+import { requestEvaluate } from './socket'
 
 export const useStore = defineStore('counter', () => {
     // props
@@ -11,7 +12,8 @@ export const useStore = defineStore('counter', () => {
     const position = ref(fenToPosition(fen.value, height.value, width.value))
     const disabledFields = ref([])
     const flagRegion = ref([])
-    const beatable = ref('unkown')
+    const winnable = ref('unkown')
+    const minTurns = ref(-1)
 
     // getters 
     const getNamedDisabledFields = computed(() => {
@@ -65,11 +67,35 @@ export const useStore = defineStore('counter', () => {
             flagRegion.value.push(fieldName)
         }
     }
+    async function evaluate() {
+        const config = {
+            levelName: levelName.value,
+            fen: fen.value,
+            maxRank: height.value,
+            maxFile: width.value,
+            disabledFields: getNamedDisabledFields.value,
+            flagRegion: getNamedFlagRegion.value,
+        }
+        requestEvaluate(config).then(res => {
+            winnable.value = res.winnable
+            minTurns.value = res.minTurns
+        }).catch(console.log)
+    }
 
     // watchers
     watch(fen, () => {
         position.value = fenToPosition(fen.value, height.value, width.value)
+        winnable.value = "unkown"
+        evaluate()
     })
+    watch(flagRegion, () => {
+        winnable.value = "unkown"
+        evaluate()
+    }, {deep: true})
+    watch(disabledFields, () => {
+        winnable.value = "unkown"
+        evaluate()
+    }, {deep: true})
     watch(height, () => {
         let ranks = fen.value.split('/')
         if(ranks.length > height.value) { // height was reduced 
@@ -106,7 +132,7 @@ export const useStore = defineStore('counter', () => {
     })
 
     return {
-        levelName, fen, width, height, position, disabledFields, flagRegion, beatable,
+        levelName, fen, width, height, position, disabledFields, flagRegion, winnable, minTurns,
         getNamedDisabledFields, getNamedFlagRegion,
         setWidth, setHeight, removePiece, addPiece, toggleDisabled, toggleFlag
     }

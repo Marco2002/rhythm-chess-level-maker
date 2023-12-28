@@ -23,19 +23,35 @@
         <v-text-field label="fen" variant="outlined" v-model="store.fen" disabled></v-text-field>
         <v-text-field label="disabled fields" variant="outlined" v-model="store.getNamedDisabledFields" disabled></v-text-field>
         <v-text-field label="flag region" variant="outlined" v-model="store.getNamedFlagRegion" disabled></v-text-field>
-        <v-btn class="w-full my-2" variant="outlined" @click="evaluate">evaluate</v-btn>
         <v-btn class="w-full my-2" @click="generate">generate file</v-btn>
 
         <v-divider class="my-6"></v-divider>
 
         <h2 class="text-center pb-4">Evaluation Result</h2>
         <div class="text-center">
-          <v-chip 
-            :prepend-icon="beatableIcon"
-            :class="beatableColor"
-          >
-            Beatable
-          </v-chip>
+          <div>
+            <v-chip 
+              variant="outlined"
+              :class="winnableColor"
+            >
+              <template v-slot:prepend>
+                <v-icon :icon="winnableIcon" :class="{
+                  'rotating': store.winnable === 'unkown',
+                  '-ml-2 mr-2': true,
+                }"></v-icon>
+              </template>
+              Winnable
+            </v-chip>
+          </div>
+          <div class="pt-4">
+            <v-chip 
+              v-show="store.winnable === true"
+              variant="outlined"
+              class="text-green"
+            >
+              minimum number of turns: {{ store.minTurns }}
+            </v-chip>
+          </div>
         </div>
         
       </div>
@@ -54,31 +70,15 @@
 </template>
 
 <script setup>
-import { ref, computed } from 'vue'
+import { computed } from 'vue'
 import Chessboard from '@/components/Chessboard.vue'
 import Chesspiece from '@/components/Chesspiece.vue'
 import { useStore } from '@/store'
-import { requestEvaluate, requestGenerate } from './socket'
+import { requestGenerate } from './socket'
 
 const store = useStore()
 
 let chesspieces = ['a', 'P', 'N', 'B', 'R', 'Q']
-
-function validateWidthAndHeight(value) {
-  return value > 0 && value <= 8;
-}
-
-function evaluate() {
-  const config = {
-    levelName: store.levelName,
-    fen: store.fen,
-    maxRank: store.height,
-    maxFile: store.width,
-    disabledFields: store.getNamedDisabledFields,
-    flagRegion: store.getNamedFlagRegion,
-  }
-  requestEvaluate(config)
-}
 
 function generate() {
   const config = {
@@ -92,10 +92,47 @@ function generate() {
   requestGenerate(config)
 }
 
-const beatableIcon = computed(() => {
-  return store.beatable === 'unkown' ? 'mdi-circle-outline' : ( store.beatable ? 'mdi-check-circle' : 'mdi-close-circle')
+const winnableIcon = computed(() => {
+  return store.winnable === 'unkown' ? 'mdi-loading' : ( store.winnable ? 'mdi-check-circle' : 'mdi-close-circle')
 })
-const beatableColor = computed(() => {
-  return store.beatable === 'unkown' ? '' : ( store.beatable ? 'text-green' : 'text-red')
+const winnableColor = computed(() => {
+  return store.winnable === 'unkown' ? '' : ( store.winnable ? 'text-green' : 'text-red')
 })
 </script>
+<style scoped>
+@-webkit-keyframes rotating /* Safari and Chrome */ {
+  from {
+    -webkit-transform: rotate(0deg);
+    -o-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  to {
+    -webkit-transform: rotate(360deg);
+    -o-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
+@keyframes rotating {
+  from {
+    -ms-transform: rotate(0deg);
+    -moz-transform: rotate(0deg);
+    -webkit-transform: rotate(0deg);
+    -o-transform: rotate(0deg);
+    transform: rotate(0deg);
+  }
+  to {
+    -ms-transform: rotate(360deg);
+    -moz-transform: rotate(360deg);
+    -webkit-transform: rotate(360deg);
+    -o-transform: rotate(360deg);
+    transform: rotate(360deg);
+  }
+}
+.rotating {
+  -webkit-animation: rotating 1s linear infinite;
+  -moz-animation: rotating 1s linear infinite;
+  -ms-animation: rotating 1s linear infinite;
+  -o-animation: rotating 1s linear infinite;
+  animation: rotating 1s linear infinite;
+}
+</style>

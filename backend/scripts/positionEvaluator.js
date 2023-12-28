@@ -1,7 +1,7 @@
 import {spawn} from 'child_process'
 
 // a negative value in evaluation means black looses a posite means black wins
-const depth = 50
+const depth = 40
 let lastScore;
 
 export default function evaluate() {
@@ -23,8 +23,16 @@ export default function evaluate() {
                     lastScore = s.split(' ')[8] + ' ' + s.split(' ')[9]
                     const currentDepth = s.split(' ')[2]              
                     if(currentDepth == depth) {
+                        let result = {}
                         fairyStockfish.stdin.end()
-                        resolve(lastScore)
+                        if(lastScore.split(' ')[0] == 'mate' && parseInt(lastScore.split(' ')[1]) > 0) {
+                            result.winnable = true;
+                            result.minTurns = parseInt(lastScore.split(' ')[1])
+                            resolve(result)
+                        } else {
+                            result.winnable = false
+                            resolve(result)
+                        }
                     }
                 })
     

@@ -20,13 +20,12 @@ wss.on('connection', function connection(ws) {
     console.log('received: %s', msg);
 
     if(msg.toString().startsWith('evl')) {
+      let result = {}
       const config = JSON.parse(msg.toString().substring(4))
       makeIni(config).then(() => {
-        evaluate().then((res) => {
-          if(res.split(' ')[0] == 'mate' && parseInt(res.split(' ')[1]) > 0) {
-            console.log('winnable')
-          }
-        })
+        return evaluate()
+      }).then((res) => {
+        ws.send(JSON.stringify(res))
       }).catch(console.log)
     }
   }); 

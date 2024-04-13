@@ -1,7 +1,7 @@
 import {spawn} from 'child_process'
 
 // a negative value in evaluation means black looses a posite means black wins
-const depth = 40
+const depth = 20
 let lastScore;
 
 export default function evaluate() {

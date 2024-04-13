@@ -1,8 +1,7 @@
 import { WebSocketServer } from 'ws'
 import makeIni from "./scripts/makeIni.js"
 import evaluate from "./scripts/positionEvaluator.js";
-
-// const { makeCsv } = require("./scripts/csvMaker")
+import makeCsv from './scripts/csvMaker.js';
 
 
 // const fs = require('fs');
@@ -20,10 +19,18 @@ wss.on('connection', function connection(ws) {
     console.log('received: %s', msg);
 
     if(msg.toString().startsWith('evl')) {
-      let result = {}
       const config = JSON.parse(msg.toString().substring(4))
       makeIni(config).then(() => {
         return evaluate()
+      }).then((res) => {
+        ws.send(JSON.stringify(res))
+      }).catch(console.log)
+    }
+
+    if(msg.toString().startsWith('gen')) {
+      const config = JSON.parse(msg.toString().substring(4))
+      makeIni(config).then(() => {
+        return makeCsv(config)
       }).then((res) => {
         ws.send(JSON.stringify(res))
       }).catch(console.log)

@@ -1,15 +1,19 @@
-const {spawn} = require('child_process')
-const jsonData = require('../input.json')
-const fs = require('fs')
+import {spawn} from 'child_process'
+import fs from 'fs'
+import { createRequire } from "module";
+
+const require = createRequire(import.meta.url);
+
+const matrix = new Map()
+const callStack = []
+const fensWhereWhiteSkips = []
 let start
 let end
 let log
 let currentFen
 let currentMoves
-const matrix = new Map()
-const callStack = []
-fensWhereWhiteSkips = []
-var fairyStockfish
+let fairyStockfish
+let jsonData
 
 function exportMapToCsv() {
     end = Date.now();
@@ -26,7 +30,7 @@ function exportMapToCsv() {
             return console.log(err)
         }
     })
-    fs.writeFile(jsonData.outputPath+"/"+jsonData.levelName+".csv", csvContent, function(err) {
+    fs.writeFile("backend/output/"+jsonData.levelName+".csv", csvContent, function(err) {
         if(err) {
             return console.log(err)
         }
@@ -36,7 +40,7 @@ function exportMapToCsv() {
 }
 
 
-function callNextInStack(immidiatly) {
+function callNextInStack() {
     if(callStack.length == 0) { 
         console.log('-----------end---------------')
         console.log(matrix)
@@ -83,9 +87,10 @@ function run(command) {
     fairyStockfish.stdin.write(command)
 }
 
-function makeCsv() {
+export default function makeCsv(data) {
+    jsonData = data
     start = Date.now();
-    fairyStockfish = spawn('./stockfish')
+    fairyStockfish = spawn('./backend/stockfish')
     fairyStockfish.stdout.on('data', (data) => {
         log += data.toString()
         if(data.toString().includes('Fen: ')) {
@@ -102,7 +107,7 @@ function makeCsv() {
                 // handle output of d when active player is white
                 if(matrix.has(currentFen)) callNextInStack()
                 else {
-                    run('go depth 50\n')
+                    run('go depth 15\n')
                 }
             }
         } else if(data.toString().includes('Nodes searched:')) {
@@ -142,12 +147,10 @@ function makeCsv() {
     })
 
     // Algorithm starts
-    run("load output/variants.ini\n")
+    run("load backend/output/variants.ini\n")
     run("uci\n")
     run("setoption name Use NNUE value false\n")
     run("setoption name UCI_Variant value 1RhythmChess\n")
     run("setoption name Threads value 1\n")
     run('position startpos\nd\n')
 }
-
-module.exports.makeCsv = makeCsv

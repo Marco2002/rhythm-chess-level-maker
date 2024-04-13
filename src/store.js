@@ -47,13 +47,15 @@ export const useStore = defineStore('counter', () => {
     }
     function toggleDisabled(x, y) {
         const fieldName = `${x}${y}`
-        if(flagRegion.value.includes(fieldName)) return;
+        if(flagRegion.value.includes(fieldName) || position.value[y][x] !== 'none' && position.value[y][x] !== 'x') return;
         
         if(disabledFields.value.includes(fieldName)) {
             const index = disabledFields.value.indexOf(fieldName)
             disabledFields.value.splice(index, 1);
+            removePiece(x, y)
         } else {
             disabledFields.value.push(fieldName)
+            addPiece(x, y, 'x')
         }
     }
     function toggleFlag(x, y) {      

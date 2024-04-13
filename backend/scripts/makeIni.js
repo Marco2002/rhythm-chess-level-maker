@@ -22,6 +22,7 @@ export default function makeIni(config) {
     const variantsIni = `[1RhythmChess:chess]
 customPiece1 = a:mcWceF
 customPiece2 = p:mfWcfF
+immobile = x
 
 flagPiece = a
 flagRegionBlack = ${flagRegionString}

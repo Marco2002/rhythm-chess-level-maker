@@ -14,6 +14,8 @@ export const useStore = defineStore('counter', () => {
     const flagRegion = ref([])
     const winnable = ref('unkown')
     const minTurns = ref(-1)
+    const playMode = ref(false)
+    const backupFen = ref('8/8/8/8/8/8/8/8')
 
     // getters 
     const getNamedDisabledFields = computed(() => {
@@ -47,7 +49,7 @@ export const useStore = defineStore('counter', () => {
     }
     function toggleDisabled(x, y) {
         const fieldName = `${x}${y}`
-        if(flagRegion.value.includes(fieldName) || position.value[y][x] !== 'none' && position.value[y][x] !== 'x') return;
+        if(playMode.value || flagRegion.value.includes(fieldName) || position.value[y][x] !== 'none' && position.value[y][x] !== 'x') return;
         
         if(disabledFields.value.includes(fieldName)) {
             const index = disabledFields.value.indexOf(fieldName)
@@ -60,7 +62,7 @@ export const useStore = defineStore('counter', () => {
     }
     function toggleFlag(x, y) {      
         const fieldName = `${x}${y}`
-        if(disabledFields.value.includes(fieldName)) return;
+        if(playMode.value || disabledFields.value.includes(fieldName)) return;
 
         if(flagRegion.value.includes(fieldName)) {
             const index = flagRegion.value.indexOf(fieldName)
@@ -69,7 +71,27 @@ export const useStore = defineStore('counter', () => {
             flagRegion.value.push(fieldName)
         }
     }
+    function play() {
+        this.playMode = true;
+        this.backupFen = this.fen;
+    }
+    function reset() {
+        this.playMode = false;
+        this.fen = this.backupFen;
+    }
+    function makeMove(move) {
+        const from = namedFieldToNumberedField(move.substring(0,2), width.value);
+        const to = namedFieldToNumberedField(move.substring(2,4), width.value);
+        const pos = position.value
+        const piece = pos[from[1]][from[0]];
+        pos[from[1]][from[0]] = 'none'
+        pos[to[1]][to[0]] = piece
+        fen.value = positionToFen(pos)
+    }
     async function evaluate() {
+        if(playMode.value) return;
+        winnable.value = 'unkown'
+        minTurns.value = -1
         const config = {
             levelName: levelName.value,
             fen: fen.value,
@@ -81,7 +103,10 @@ export const useStore = defineStore('counter', () => {
         requestEvaluate(config).then(res => {
             winnable.value = res.winnable
             minTurns.value = res.minTurns
-        }).catch(console.log)
+        }).catch((err) => {
+            winnable.value = false;
+            minTurns.value = -1;
+        })
     }
 
     // watchers
@@ -134,9 +159,9 @@ export const useStore = defineStore('counter', () => {
     })
 
     return {
-        levelName, fen, width, height, position, disabledFields, flagRegion, winnable, minTurns,
+        levelName, fen, width, height, position, disabledFields, flagRegion, winnable, minTurns, playMode, backupFen,
         getNamedDisabledFields, getNamedFlagRegion,
-        setWidth, setHeight, removePiece, addPiece, toggleDisabled, toggleFlag
+        setWidth, setHeight, removePiece, addPiece, toggleDisabled, toggleFlag, play, reset, makeMove, evaluate
     }
 
 })

@@ -25,6 +25,7 @@ import imgWN from '@/assets/pieces/wn.png'
 import imgWB from '@/assets/pieces/wb.png'
 import imgWR from '@/assets/pieces/wr.png'
 import imgWQ from '@/assets/pieces/wq.png'
+import { watch } from 'vue';
 
 const store = useStore()
 
@@ -40,6 +41,11 @@ const props = defineProps({
 })
 
 let piece
+
+watch(() => store.position, (newVal) => {
+    if(props.isFactory) return;
+    else pieceArr.value[0] = ref(newVal[props.y][props.x])
+}, {deep: true})
 
 if(props.piece) {
     piece = ref(props.piece)
@@ -60,6 +66,7 @@ function getImage(piece) {
         case 'R': image = imgWR; break;
         case 'Q': image = imgWQ; break;
         case 'none': break;
+        case 'x': break;
         default: console.warn('invalid piece name: ' + piece)
     }
     return image

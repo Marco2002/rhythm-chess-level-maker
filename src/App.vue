@@ -1,8 +1,8 @@
 <template>
   <v-app>
-    <v-navigation-drawer :width="400">
+    <v-navigation-drawer :width="400" v-model="drawerOpen">
       
-      <div class="pa-8">
+      <div class="pa-8" v-show="!store.playMode">
         <h2 class="text-center pb-4">Configuration</h2>
         <v-text-field label="level name" variant="outlined" v-model="store.levelName"></v-text-field>
 
@@ -27,9 +27,21 @@
 
         <v-divider class="my-6"></v-divider>
 
-        <h2 class="text-center pb-4">Evaluation Result</h2>
+        <div class="flex justify-center align-center gap-4 pb-4">
+          <h2 class="inline">
+            Evaluation Result
+          </h2>
+          <v-btn 
+            size="small"
+            icon="mdi-refresh"
+            color="primary"
+            density="comfortable"
+            @click="store.evaluate"
+          ></v-btn>
+        </div>
         <div class="text-center">
           <div>
+            
             <v-chip 
               variant="outlined"
               :class="winnableColor"
@@ -58,11 +70,27 @@
       
     </v-navigation-drawer>
     <v-main class="flex content-center justify-items-center items-center">
-      <div class="flex flex-col gap-4 items-center w-40">
+      <div class="flex flex-col gap-4 items-center w-40" v-show="!store.playMode">
         <Chesspiece v-for="chesspiece in chesspieces" :piece="chesspiece" :key="chesspiece" :piece-holder-key="chesspiece+'Prefab'" is-factory/>
       </div>
-      <div class="grow flex flex-col items-center">
-        <Chessboard />
+      
+      <div class="grow flex items-center justify-center">
+        <div class="flex gap-4 pr-8 items-center">
+          <v-btn 
+            :icon="store.playMode ? 'mdi-restore': 'mdi-play'" 
+            @click="store.playMode ? store.reset() : store.play()"
+            :color="store.playMode ? 'red' : 'primary'"
+          ></v-btn>
+          <v-btn 
+            v-show="store.playMode"
+            size="large"
+            rounded="xl"
+            @click="automove"
+          >AUTO</v-btn>
+        </div>
+        <div>
+          <Chessboard />
+        </div>
         
       </div>
     </v-main>
@@ -74,9 +102,10 @@ import { computed } from 'vue'
 import Chessboard from '@/components/Chessboard.vue'
 import Chesspiece from '@/components/Chesspiece.vue'
 import { useStore } from '@/store'
-import { requestGenerate } from './socket'
+import { requestGenerate, requestAutomove } from './socket'
 
 const store = useStore()
+const drawerOpen = computed(() => !store.playMode)
 
 let chesspieces = ['a', 'P', 'N', 'B', 'R', 'Q']
 
@@ -90,6 +119,23 @@ function generate() {
     flagRegion: store.getNamedFlagRegion,
   }
   requestGenerate(config)
+}
+
+function automove() {
+  const config = {
+    fen: store.fen,
+    maxRank: store.height,
+    maxFile: store.width,
+    disabledFields: store.getNamedDisabledFields,
+    flagRegion: store.getNamedFlagRegion,
+  }
+  requestAutomove(config).then(result => {
+    console.log(result)
+    store.makeMove(result.bestmove)
+    if(result.ponder) {
+      setTimeout(() => store.makeMove(result.ponder), 500);
+    }
+  })
 }
 
 const winnableIcon = computed(() => {

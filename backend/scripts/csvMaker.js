@@ -1,12 +1,9 @@
 import {spawn} from 'child_process'
 import fs from 'fs'
-import { createRequire } from "module";
-
-const require = createRequire(import.meta.url);
 
 const matrix = new Map()
-const callStack = []
-const fensWhereWhiteSkips = []
+let callStack = []
+let fensWhereWhiteSkips = []
 let start
 let end
 let log
@@ -45,6 +42,7 @@ function callNextInStack() {
         console.log('-----------end---------------')
         console.log(matrix)
         fairyStockfish.stdin.end()
+        fairyStockfish.kill()
         exportMapToCsv()
     }
     else {
@@ -89,6 +87,9 @@ function run(command) {
 
 export default function makeCsv(data) {
     jsonData = data
+    matrix.clear()
+    callStack = []
+    fensWhereWhiteSkips = []
     start = Date.now();
     fairyStockfish = spawn('./backend/stockfish')
     fairyStockfish.stdout.on('data', (data) => {

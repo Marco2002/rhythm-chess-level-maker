@@ -25,6 +25,7 @@ export default function evaluate() {
                     if(currentDepth == depth) {
                         let result = {}
                         fairyStockfish.stdin.end()
+                        fairyStockfish.kill()
                         if(lastScore.split(' ')[0] == 'mate' && parseInt(lastScore.split(' ')[1]) > 0) {
                             result.winnable = true;
                             result.minTurns = parseInt(lastScore.split(' ')[1])

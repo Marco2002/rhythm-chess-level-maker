@@ -1,6 +1,6 @@
 import {spawn} from 'child_process'
 
-const depth = 30
+const depth = 40
 
 export default function getMove() {
     const fairyStockfish = spawn('./backend/stockfish')
@@ -20,7 +20,7 @@ export default function getMove() {
                 const lineSegments = moveLine.split(' ')
                 let result = {}
                 result.bestmove = lineSegments[1].substring(0, 4)
-                if(lineSegments.length > 2) result.ponder = lineSegments[3].substring(0, 4),
+                if(lineSegments.length > 2) result.ponder = lineSegments[3].substring(0, 4)
                 
                 fairyStockfish.stdin.end()
                 fairyStockfish.kill()

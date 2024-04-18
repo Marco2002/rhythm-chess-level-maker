@@ -24,7 +24,7 @@ customPiece1 = a:mcWceF
 customPiece2 = p:mfWcfF
 customPiece3 = b:F
 customPiece4 = r:W
-customPiece4 = q:WF
+customPiece5 = q:WF
 immobile = x
 
 flagPiece = a
@@ -32,13 +32,12 @@ flagRegionBlack = ${flagRegionString}
 extinctionValue = loss
 extinctionPieceTypes = *
 mobilityRegionWhiteKnight = ${mobilityRegion}
-mobilityRegionWhiteBishop = ${mobilityRegion}
-mobilityRegionWhitePawn = ${mobilityRegion}
-mobilityRegionWhiteCustomPiece2 = ${mobilityRegion}
-mobilityRegionWhiteQueen = ${mobilityRegion}
-mobilityRegionWhiteKing = ${mobilityRegion}
-mobilityRegionWhiteRook =  ${mobilityRegion}
 mobilityRegionBlackCustomPiece1 = ${mobilityRegion}
+mobilityRegionWhiteCustomPiece2 = ${mobilityRegion}
+mobilityRegionWhiteCustomPiece3 = ${mobilityRegion}
+mobilityRegionWhiteCustomPiece4 =  ${mobilityRegion}
+mobilityRegionWhiteCustomPiece5 = ${mobilityRegion}
+
 immobilityIllegal = true
 
 passBlack = true

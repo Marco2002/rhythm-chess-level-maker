@@ -3,13 +3,7 @@ import makeIni from "./scripts/makeIni.js"
 import evaluate from "./scripts/positionEvaluator.js";
 import makeCsv from './scripts/csvMaker.js';
 import getMove from './scripts/getMove.js';
-
-
-// const fs = require('fs');
-
-// makeIni()
-// const lastScore = evaluate()
-// makeCsv()
+import csvToRcl from './scripts/csvToRcl.js';
 
 const wss = new WebSocketServer({ port: 8080 });
 
@@ -33,6 +27,8 @@ wss.on('connection', function connection(ws) {
     if(msg.toString().startsWith('gen')) {
       makeIni(config).then(() => {
         return makeCsv(config)
+      }).then(() => {
+        return csvToRcl(config.levelName)
       }).then((res) => {
         ws.send(JSON.stringify(res))
       }).catch(console.log)

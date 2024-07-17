@@ -81,12 +81,20 @@
             @click="store.playMode ? store.reset() : store.play()"
             :color="store.playMode ? 'red' : 'primary'"
           ></v-btn>
-          <v-btn 
-            v-show="store.playMode"
-            size="large"
-            rounded="xl"
-            @click="automove"
-          >AUTO</v-btn>
+          <div class="flex flex-col gap-4">
+            <v-btn 
+              v-show="store.playMode"
+              size="large"
+              rounded="xl"
+              @click="automove(false)"
+            >AUTO</v-btn>
+            <v-btn 
+              v-show="store.playMode"
+              size="large"
+              rounded="xl"
+              @click="automove(true)"
+            >CPU MOVE</v-btn>
+          </div>
         </div>
         <div>
           <Chessboard />
@@ -98,11 +106,11 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed, onMounted } from 'vue'
 import Chessboard from '@/components/Chessboard.vue'
 import Chesspiece from '@/components/Chesspiece.vue'
 import { useStore } from '@/store'
-import { requestGenerate, requestAutomove } from './socket'
+import { requestGenerate, requestAutomove, requestCpumove } from './socket'
 
 const store = useStore()
 const drawerOpen = computed(() => !store.playMode)
@@ -121,18 +129,18 @@ function generate() {
   requestGenerate(config)
 }
 
-function automove() {
+function automove(cpu) {
   const config = {
     fen: store.fen,
     maxRank: store.height,
     maxFile: store.width,
     disabledFields: store.getNamedDisabledFields,
     flagRegion: store.getNamedFlagRegion,
+    cpuTurn: cpu
   }
   requestAutomove(config).then(result => {
-    console.log(result)
     store.makeMove(result.bestmove)
-    if(result.ponder) {
+    if(result.ponder && !cpu) {
       setTimeout(() => store.makeMove(result.ponder), 500);
     }
   })
@@ -143,6 +151,14 @@ const winnableIcon = computed(() => {
 })
 const winnableColor = computed(() => {
   return store.winnable === 'unkown' ? '' : ( store.winnable ? 'text-green' : 'text-red')
+})
+
+onMounted(() => {
+  document.addEventListener("keydown", (event) => {
+    if(event.code == 'Space' && store.playMode) {
+      automove(true)
+    }
+  })
 })
 </script>
 <style scoped>

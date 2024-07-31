@@ -33,5 +33,8 @@ export default createVuetify({
     VBtn: {
       color: 'primary',
     },
+  },
+  display: {
+    mobileBreakpoint: 768,
   }
 })

@@ -46,7 +46,7 @@ passOnStalemateWhite = true
 maxRank = ${config.maxRank}
 maxFile = ${config.maxFile}
 
-startFen = ${config.fen} ${config.cpuTurn ? 'w' : 'b'} - - 0 1`
+startFen = ${config.fen} ${ config.enemyTurn ? 'w' : 'b'} - - 0 1`
 
     return new Promise(function(resolve, reject) {
         fs.writeFile("./backend/output/variants.ini", variantsIni, function(err) {

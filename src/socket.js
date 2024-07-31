@@ -39,12 +39,4 @@ export function requestAutomove(config) {
     })
 }
 
-export function requestCpumove(config) {
-    socket.send('cpu ' + JSON.stringify(config))
-    return new Promise((resolve, reject) => {
-        socket.onmessage = destructMessageAndResolve(resolve)
-        socket.onerror = reject
-    })
-}
-
 setInterval(() => evaluateOverflow = false, 1000)

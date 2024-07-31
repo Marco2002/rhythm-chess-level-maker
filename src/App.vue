@@ -1,6 +1,6 @@
 <template>
   <v-app>
-    <v-navigation-drawer :width="400" v-model="drawerOpen">
+    <v-navigation-drawer :width="$vuetify.display.mobile ? 350 : 400" v-model="drawerOpen" :location="$vuetify.display.mobile ? 'bottom' : undefined">
       
       <div class="pa-8" v-show="!store.playMode">
         <h2 class="text-center pb-4">Configuration</h2>
@@ -69,13 +69,13 @@
       </div>
       
     </v-navigation-drawer>
-    <v-main class="flex content-center justify-items-center items-center">
-      <div class="flex flex-col gap-4 items-center w-40" v-show="!store.playMode">
+    <v-main class="flex flex-col md:flex-row content-center justify-items-center items-center main-content">
+      <div class="md:absolute grow flex md:flex-col gap-4 items-center md:w-40" v-show="!store.playMode">
         <Chesspiece v-for="chesspiece in chesspieces" :piece="chesspiece" :key="chesspiece" :piece-holder-key="chesspiece+'Prefab'" is-factory/>
       </div>
       
-      <div class="grow flex items-center justify-center">
-        <div class="flex gap-4 pr-8 items-center">
+      <div class="flex flex-col-reverse gap-4 md:flex-row grow items-center justify-center">
+        <div class="flex gap-4 items-center">
           <v-btn 
             :icon="store.playMode ? 'mdi-restore': 'mdi-play'" 
             @click="store.playMode ? store.reset() : store.play()"
@@ -110,7 +110,7 @@ import { computed, onMounted } from 'vue'
 import Chessboard from '@/components/Chessboard.vue'
 import Chesspiece from '@/components/Chesspiece.vue'
 import { useStore } from '@/store'
-import { requestGenerate, requestAutomove, requestCpumove } from './socket'
+import { requestGenerate, requestAutomove } from './socket'
 
 const store = useStore()
 const drawerOpen = computed(() => !store.playMode)
@@ -196,5 +196,19 @@ onMounted(() => {
   -ms-animation: rotating 1s linear infinite;
   -o-animation: rotating 1s linear infinite;
   animation: rotating 1s linear infinite;
+}
+
+.main-content {
+  @media screen and (max-width: 768px) {
+    position: absolute;
+    bottom: 420px;
+    top: 20px;
+    left: 10px;
+    right: 10px;
+  }
+}
+
+.v-navigation-drawer__scrim {
+  display: none;
 }
 </style>

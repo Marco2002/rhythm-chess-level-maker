@@ -1,7 +1,7 @@
 <template>
     <div class="c-chessboard" :style="{
-        width: store.width*100 +'px',
-        height: store.height*100+'px'
+        width: ($vuetify.display.mobile ? store.width*50 : store.width*100) +'px',
+        height: ($vuetify.display.mobile ? store.height*50 : store.height*100)+'px'
     }">
         <div v-for="y in (store.height * 1)" v-bind:key="y" class="c-chessboard__row">
             <div v-for="x in (store.width * 1)" v-bind:key="y*10+x" 
@@ -70,6 +70,9 @@ let store = useStore()
     color: #4b7399;
     font-size: 24px;
     font-weight: 500;
+    @media screen and (max-width: 768px) {
+        font-size: 16px;
+    }
 }
 
 .offset .rank, .offset .file, .flag .rank, .flag .file {

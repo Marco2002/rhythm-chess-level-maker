@@ -1,5 +1,5 @@
 <template>
-    <draggable class="c-chesspiece" 
+    <draggable class="c-chesspiece h-full" 
         v-model="pieceArr" 
         tag="ul" 
         :item-key="pieceHolderKey" 
@@ -87,17 +87,31 @@ function handleChange(event) {
     if(!props.isFactory) {
         if(event.added) {
             store.addPiece(props.x, props.y, pieceArr.value[0].value)
+            if(store.playMode) {
+
+            }
         } else if(event.removed) {
             store.removePiece(props.x, props.y)
         }
     }
 }
 
-</script>
-
-<style scoped>
-.c-chesspiece {
-    width: 100px;
-    height: 100px;
+function automoveEnemy() {
+  const config = {
+    fen: store.fen,
+    maxRank: store.height,
+    maxFile: store.width,
+    disabledFields: store.getNamedDisabledFields,
+    flagRegion: store.getNamedFlagRegion,
+    enemyTurn: true,
+  }
+  requestAutomove(config).then(result => {
+    console.log(result)
+    store.makeMove(result.bestmove)
+    if(result.ponder) {
+      setTimeout(() => store.makeMove(result.ponder), 500);
+    }
+  })
 }
-</style>
+
+</script>

@@ -49,7 +49,9 @@ export const useStore = defineStore('counter', () => {
     }
     function toggleDisabled(x, y) {
         const fieldName = `${x}${y}`
-        if(playMode.value || flagRegion.value.includes(fieldName) || position.value[y][x] !== 'none' && position.value[y][x] !== 'x') return;
+        if(position.value[y][x] !== 'none' && position.value[y][x] !== 'x') return;
+
+        if(flagRegion.value.includes(fieldName)) toggleFlag(x, y)
         
         if(disabledFields.value.includes(fieldName)) {
             const index = disabledFields.value.indexOf(fieldName)
@@ -62,7 +64,8 @@ export const useStore = defineStore('counter', () => {
     }
     function toggleFlag(x, y) {      
         const fieldName = `${x}${y}`
-        if(playMode.value || disabledFields.value.includes(fieldName)) return;
+
+        if(disabledFields.value.includes(fieldName)) toggleDisabled(x, y);
 
         if(flagRegion.value.includes(fieldName)) {
             const index = flagRegion.value.indexOf(fieldName)

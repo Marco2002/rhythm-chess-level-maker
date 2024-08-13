@@ -1,8 +1,7 @@
 <template>
   <v-app>
     <v-navigation-drawer :width="$vuetify.display.mobile ? 350 : 400" v-model="drawerOpen" :location="$vuetify.display.mobile ? 'bottom' : undefined">
-      
-      <div class="pa-8" v-show="!store.playMode">
+      <div class="pa-8" v-show="drawerOpen">
         <h2 class="text-center pb-4">Configuration</h2>
         <v-text-field label="level name" variant="outlined" v-model="store.levelName"></v-text-field>
 
@@ -20,52 +19,12 @@
             <v-btn class="mt-1 text-red" variant="text" density="compact" icon="mdi-minus" :disabled="store.height*1 <= 1" @click="store.height--"></v-btn>
           </div>
         </div>
-        <v-text-field label="fen" variant="outlined" v-model="store.fen" disabled></v-text-field>
-        <v-text-field label="disabled fields" variant="outlined" v-model="store.getNamedDisabledFields" disabled></v-text-field>
-        <v-text-field label="flag region" variant="outlined" v-model="store.getNamedFlagRegion" disabled></v-text-field>
+        <div v-show="!$vuetify.display.mobile">
+          <v-text-field label="fen" variant="outlined" v-model="store.fen" disabled></v-text-field>
+          <v-text-field label="disabled fields" variant="outlined" v-model="store.getNamedDisabledFields" disabled></v-text-field>
+          <v-text-field label="flag region" variant="outlined" v-model="store.getNamedFlagRegion" disabled></v-text-field>
+        </div>
         <v-btn class="w-full my-2" @click="generate">generate file</v-btn>
-
-        <v-divider class="my-6"></v-divider>
-
-        <div class="flex justify-center align-center gap-4 pb-4">
-          <h2 class="inline">
-            Evaluation Result
-          </h2>
-          <v-btn 
-            size="small"
-            icon="mdi-refresh"
-            color="primary"
-            density="comfortable"
-            @click="store.evaluate"
-          ></v-btn>
-        </div>
-        <div class="text-center">
-          <div>
-            
-            <v-chip 
-              variant="outlined"
-              :class="winnableColor"
-            >
-              <template v-slot:prepend>
-                <v-icon :icon="winnableIcon" :class="{
-                  'rotating': store.winnable === 'unkown',
-                  '-ml-2 mr-2': true,
-                }"></v-icon>
-              </template>
-              Winnable
-            </v-chip>
-          </div>
-          <div class="pt-4">
-            <v-chip 
-              v-show="store.winnable === true"
-              variant="outlined"
-              class="text-green"
-            >
-              minimum number of turns: {{ store.minTurns }}
-            </v-chip>
-          </div>
-        </div>
-        
       </div>
       
     </v-navigation-drawer>
@@ -96,8 +55,38 @@
             >CPU MOVE</v-btn>
           </div>
         </div>
-        <div>
+        <div class="flex flex-col gap-4 align-center">
           <Chessboard />
+          <div class="text-center flex align-center gap-2">
+
+              
+              <v-chip 
+                variant="outlined"
+                :class="winnableColor"
+              >
+                <template v-slot:prepend>
+                  <v-icon :icon="winnableIcon" :class="{
+                    'rotating': store.winnable === 'unkown',
+                    '-ml-2 mr-2': true,
+                  }"></v-icon>
+                </template>
+                Winnable
+              </v-chip>
+              <v-chip 
+                v-show="store.winnable === true"
+                variant="outlined"
+                class="text-green"
+              >
+                minimum number of turns: {{ store.minTurns }}
+              </v-chip>
+            <v-btn 
+              size="small"
+              icon="mdi-refresh"
+              color="primary"
+              density="comfortable"
+              @click="store.evaluate"
+            ></v-btn>
+          </div>
         </div>
         
       </div>
@@ -106,14 +95,18 @@
 </template>
 
 <script setup>
-import { computed, onMounted } from 'vue'
+import { computed, onMounted, watch, ref } from 'vue'
 import Chessboard from '@/components/Chessboard.vue'
 import Chesspiece from '@/components/Chesspiece.vue'
 import { useStore } from '@/store'
 import { requestGenerate, requestAutomove } from './socket'
 
 const store = useStore()
-const drawerOpen = computed(() => !store.playMode)
+const drawerOpen = ref(true)
+
+watch(() => store.playMode, () => {
+  drawerOpen.value = !store.playMode
+})
 
 let chesspieces = ['a', 'P', 'N', 'B', 'R', 'Q']
 

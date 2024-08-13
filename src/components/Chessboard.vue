@@ -11,8 +11,8 @@
                     disabled: store.disabledFields.includes(`${x-1}${y-1}`),
                     flag: store.flagRegion.includes(`${x-1}${y-1}`)
                 }"
-                @click="store.toggleDisabled(x-1,y-1)"
-                @contextmenu="(e) => {e.preventDefault(), store.toggleFlag(x-1,y-1)}">
+                @click="clickHandler($event, x, y)"
+                @contextmenu="rightClickHandler($event, x, y)">
                 <Chesspiece :x="x-1" :y="y-1" :piece-holder-key="`piece${x}-${y}`"/>
                 
                 <p v-if="x==1" class="rank">{{y}}</p>
@@ -27,6 +27,30 @@ import { useStore } from '@/store'
 import Chesspiece from '@/components/Chesspiece.vue';
 
 let store = useStore()
+let clicks = 0
+let timer;
+
+const clickHandler = (event, x, y) => {
+    if(store.playMode) return
+    clicks++;
+    if (clicks === 1) {
+        store.toggleDisabled(x-1,y-1)
+        timer = setTimeout( () => {
+            clicks = 0
+        }, 150);
+    } else {
+        store.toggleFlag(x-1, y-1)
+        clearTimeout(timer);  
+        clicks = 0;
+    }
+    
+}
+
+const rightClickHandler = (event, x, y) => {
+    event.preventDefault()
+    if(store.playMode) return
+    store.toggleFlag(x-1,y-1)
+}
 
 </script>
 

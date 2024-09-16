@@ -1,5 +1,5 @@
 <template>
-    <div class="c-chessboard w-full" :style="{'max-width': maxWidth}">
+    <div class="c-chessboard w-screen md:w-full" :style="{'max-width': maxWidth}">
         <div v-for="y in (store.height * 1)" v-bind:key="y" class="c-chessboard__row">
             <div v-for="x in (store.width * 1)" v-bind:key="y*10+x" 
                 class="c-chessboard__tile"
@@ -53,10 +53,10 @@ const rightClickHandler = (event, x, y) => {
     store.toggleFlag(x-1,y-1)
 }
 
-const maxWidth = ref(store.width/store.height * (height.value * 0.8) + 'px')
+const maxWidth = ref(store.width/store.height * (height.value * 0.6) + 'px')
 
 watch([() => store.width, () => store.height, height, width], () => {
-    maxWidth.value = store.width/store.height * (height.value * 0.8) + 'px';
+    maxWidth.value = store.width/store.height * (height.value * 0.6) + 'px';
     console.log(maxWidth.value)
 })
 

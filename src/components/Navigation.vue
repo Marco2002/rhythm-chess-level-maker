@@ -53,9 +53,3 @@ function generate() {
   requestGenerate(config)
 }
 </script>
-
-<style>
-.v-navigation-drawer__scrim {
-  display: none;
-}
-</style>

@@ -107,8 +107,4 @@ function handleChange(event) {
     position: absolute;
     inset: 0;
 }
-
-.c-chesspiece-slot__wrapper--factory {
-    width: 80px;
-}
 </style>

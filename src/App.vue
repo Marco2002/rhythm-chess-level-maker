@@ -1,12 +1,10 @@
 <template>
   <v-app>
     <navigation></navigation>
-    <v-main class="flex flex-col md:flex-row content-center justify-items-center items-center main-content mx-12">
-      <div class="flex md:flex-col gap-4 items-center" v-show="!store.playMode">
-        <chesspiece-slot v-for="chesspiece in chesspieces" :pieceName="chesspiece" :key="chesspiece" :piece-holder-key="chesspiece+'Prefab'" is-factory/>
-      </div>
+    <v-main class="flex flex-col md:flex-row content-center justify-items-center items-center main-content md:mx-12 gap-4">
+      <chesspiece-toolbar v-show="!store.playMode"/>
       
-      <div class="flex grow flex-col-reverse gap-4 md:flex-row grow items-center justify-center mx-8">
+      <div class="flex grow flex-col-reverse gap-4 md:flex-row grow items-center justify-center md:mx-4">
         <div class="flex gap-4 items-center">
           <v-btn 
             :icon="store.playMode ? 'mdi-restore': 'mdi-play'" 
@@ -29,7 +27,7 @@
           </div>
         </div>
         <div class="flex grow flex-col gap-4 align-center">
-          <Chessboard class="flex-2"/>
+          <Chessboard/>
           <div class="text-center flex align-center gap-2">
 
               
@@ -70,7 +68,7 @@
 <script setup>
 import { computed, onMounted, watch, ref } from 'vue'
 import Chessboard from '@/components/Chessboard.vue'
-import ChesspieceSlot from '@/components/ChesspieceSlot.vue'
+import ChesspieceToolbar from '@/components/ChesspieceToolbar.vue'
 import Navigation from '@/components/Navigation.vue'
 import { useStore } from '@/store'
 import { requestAutomove } from './socket'
@@ -81,8 +79,6 @@ const drawerOpen = ref(true)
 watch(() => store.playMode, () => {
   drawerOpen.value = !store.playMode
 })
-
-let chesspieces = ['a', 'P', 'N', 'B', 'R', 'Q']
 
 function automove(cpu) {
   const config = {

@@ -1,39 +1,12 @@
 <template>
   <v-app>
-    <v-navigation-drawer :width="$vuetify.display.mobile ? 350 : 400" v-model="drawerOpen" :location="$vuetify.display.mobile ? 'bottom' : undefined">
-      <div class="pa-8" v-show="drawerOpen">
-        <h2 class="text-center pb-4">Configuration</h2>
-        <v-text-field label="level name" variant="outlined" v-model="store.levelName"></v-text-field>
-
-        <v-divider></v-divider>
-
-        <div class="flex items-center">
-          <v-text-field class="inline-block w-1/3 mt-6" label="width" type="number" variant="outlined" v-model="store.width" disabled></v-text-field>
-          <div class="inline-block w-1/6 text-center">
-            <v-btn class="mb-1" variant="text" density="compact" icon="mdi-plus" :disabled="store.width*1 >= 8" @click="store.width++"></v-btn>
-            <v-btn class="mt-1 text-red" variant="text" density="compact" icon="mdi-minus" :disabled="store.width*1 <= 1" @click="store.width--"></v-btn>
-          </div>
-          <v-text-field class="inline-block w-1/3 mt-6" label="height" type="number" variant="outlined" v-model="store.height" disabled></v-text-field>
-          <div class="inline-block w-1/6 text-center">
-            <v-btn class="mb-1" variant="text" density="compact" icon="mdi-plus" :disabled="store.height*1 >= 8" @click="store.height++"></v-btn>
-            <v-btn class="mt-1 text-red" variant="text" density="compact" icon="mdi-minus" :disabled="store.height*1 <= 1" @click="store.height--"></v-btn>
-          </div>
-        </div>
-        <div v-show="!$vuetify.display.mobile">
-          <v-text-field label="fen" variant="outlined" v-model="store.fen" disabled></v-text-field>
-          <v-text-field label="disabled fields" variant="outlined" v-model="store.getNamedDisabledFields" disabled></v-text-field>
-          <v-text-field label="flag region" variant="outlined" v-model="store.getNamedFlagRegion" disabled></v-text-field>
-        </div>
-        <v-btn class="w-full my-2" @click="generate">generate file</v-btn>
+    <navigation></navigation>
+    <v-main class="flex flex-col md:flex-row content-center justify-items-center items-center main-content mx-12">
+      <div class="flex md:flex-col gap-4 items-center" v-show="!store.playMode">
+        <chesspiece-slot v-for="chesspiece in chesspieces" :pieceName="chesspiece" :key="chesspiece" :piece-holder-key="chesspiece+'Prefab'" is-factory/>
       </div>
       
-    </v-navigation-drawer>
-    <v-main class="flex flex-col md:flex-row content-center justify-items-center items-center main-content">
-      <div class="md:absolute grow flex md:flex-col gap-4 items-center md:w-40" v-show="!store.playMode">
-        <Chesspiece v-for="chesspiece in chesspieces" :piece="chesspiece" :key="chesspiece" :piece-holder-key="chesspiece+'Prefab'" is-factory/>
-      </div>
-      
-      <div class="flex flex-col-reverse gap-4 md:flex-row grow items-center justify-center">
+      <div class="flex grow flex-col-reverse gap-4 md:flex-row grow items-center justify-center mx-8">
         <div class="flex gap-4 items-center">
           <v-btn 
             :icon="store.playMode ? 'mdi-restore': 'mdi-play'" 
@@ -55,8 +28,8 @@
             >CPU MOVE</v-btn>
           </div>
         </div>
-        <div class="flex flex-col gap-4 align-center">
-          <Chessboard />
+        <div class="flex grow flex-col gap-4 align-center">
+          <Chessboard class="flex-2"/>
           <div class="text-center flex align-center gap-2">
 
               
@@ -97,9 +70,10 @@
 <script setup>
 import { computed, onMounted, watch, ref } from 'vue'
 import Chessboard from '@/components/Chessboard.vue'
-import Chesspiece from '@/components/Chesspiece.vue'
+import ChesspieceSlot from '@/components/ChesspieceSlot.vue'
+import Navigation from '@/components/Navigation.vue'
 import { useStore } from '@/store'
-import { requestGenerate, requestAutomove } from './socket'
+import { requestAutomove } from './socket'
 
 const store = useStore()
 const drawerOpen = ref(true)
@@ -109,18 +83,6 @@ watch(() => store.playMode, () => {
 })
 
 let chesspieces = ['a', 'P', 'N', 'B', 'R', 'Q']
-
-function generate() {
-  const config = {
-    levelName: store.levelName,
-    fen: store.fen,
-    maxRank: store.height,
-    maxFile: store.width,
-    disabledFields: store.getNamedDisabledFields,
-    flagRegion: store.getNamedFlagRegion,
-  }
-  requestGenerate(config)
-}
 
 function automove(cpu) {
   const config = {
@@ -183,6 +145,7 @@ onMounted(() => {
     transform: rotate(360deg);
   }
 }
+
 .rotating {
   -webkit-animation: rotating 1s linear infinite;
   -moz-animation: rotating 1s linear infinite;
@@ -201,7 +164,4 @@ onMounted(() => {
   }
 }
 
-.v-navigation-drawer__scrim {
-  display: none;
-}
 </style>

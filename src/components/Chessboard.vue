@@ -1,8 +1,5 @@
 <template>
-    <div class="c-chessboard" :style="{
-        width: ($vuetify.display.mobile ? store.width*50 : store.width*100) +'px',
-        height: ($vuetify.display.mobile ? store.height*50 : store.height*100)+'px'
-    }">
+    <div class="c-chessboard w-full" :style="{'max-width': maxWidth}">
         <div v-for="y in (store.height * 1)" v-bind:key="y" class="c-chessboard__row">
             <div v-for="x in (store.width * 1)" v-bind:key="y*10+x" 
                 class="c-chessboard__tile"
@@ -13,7 +10,7 @@
                 }"
                 @click="clickHandler($event, x, y)"
                 @contextmenu="rightClickHandler($event, x, y)">
-                <Chesspiece :x="x-1" :y="y-1" :piece-holder-key="`piece${x}-${y}`"/>
+                <chesspiece-slot :x="x-1" :y="y-1" :piece-holder-key="`piece${x}-${y}`"/>
                 
                 <p v-if="x==1" class="rank">{{y}}</p>
                 <p v-if="y==store.height" class="file">{{String.fromCharCode(97 + (store.width*1-x))}}</p>
@@ -23,8 +20,12 @@
 </template>
 
 <script setup>
+import { watch, ref } from 'vue'
 import { useStore } from '@/store'
-import Chesspiece from '@/components/Chesspiece.vue';
+import ChesspieceSlot from '@/components/ChesspieceSlot.vue';
+import { useWindowSize } from '@vueuse/core'
+
+const { height, width } = useWindowSize()
 
 let store = useStore()
 let clicks = 0
@@ -52,17 +53,23 @@ const rightClickHandler = (event, x, y) => {
     store.toggleFlag(x-1,y-1)
 }
 
+const maxWidth = ref(store.width/store.height * (height.value * 0.8) + 'px')
+
+watch([() => store.width, () => store.height, height, width], () => {
+    maxWidth.value = store.width/store.height * (height.value * 0.8) + 'px';
+    console.log(maxWidth.value)
+})
+
 </script>
 
 <style>
 
 .c-chessboard {
-    height: 100%;
-    width: 100%;
     display: flex;
     flex-direction: column;
     border-radius: 8px;
     overflow: hidden;
+    max-height: 100vh;
 }
 
 .c-chessboard__row {

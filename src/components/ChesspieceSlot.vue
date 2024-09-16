@@ -1,18 +1,19 @@
 <template>
-    <draggable class="c-chesspiece h-full" 
-        v-model="pieceArr" 
-        tag="ul" 
-        :item-key="pieceHolderKey" 
-        group="piece"
-        @end="drag=!isFactory" 
-        @change="handleChange"
-    >
-        <template #item="{ element: p }">
-            <img :src="getImage(p)">
-        </template>
-        
-    </draggable>
-    
+    <div class="c-chesspiece-slot__wrapper" :class="{'c-chesspiece-slot__wrapper--factory': isFactory}">
+        <draggable class="c-chesspiece-slot" 
+            v-model="pieceArr" 
+            tag="ul" 
+            :item-key="pieceHolderKey" 
+            group="piece"
+            @end="drag=!isFactory" 
+            @change="handleChange"
+        >
+            <template #item="{ element: p }">
+                <img :src="getImage(p)" class="h-full w-full" v-show="getImage(p)">
+            </template>
+            
+        </draggable>
+    </div>
 </template>
 
 <script setup>
@@ -35,7 +36,7 @@ const props = defineProps({
         default: false,
         type: Boolean,
     },
-    piece: String,
+    pieceName: String,
     x: Number,
     y: Number,
 })
@@ -47,8 +48,8 @@ watch(() => store.position, (newVal) => {
     else pieceArr.value[0] = ref(newVal[props.y][props.x])
 }, {deep: true})
 
-if(props.piece) {
-    piece = ref(props.piece)
+if(props.pieceName) {
+    piece = ref(props.pieceName)
 } else {
     if(store.position.length < store.height || store.position[0].length < store.width) piece = ref('none')
     else piece = ref(store.position[props.y][props.x])
@@ -87,31 +88,27 @@ function handleChange(event) {
     if(!props.isFactory) {
         if(event.added) {
             store.addPiece(props.x, props.y, pieceArr.value[0].value)
-            if(store.playMode) {
-
-            }
         } else if(event.removed) {
             store.removePiece(props.x, props.y)
         }
     }
 }
 
-function automoveEnemy() {
-  const config = {
-    fen: store.fen,
-    maxRank: store.height,
-    maxFile: store.width,
-    disabledFields: store.getNamedDisabledFields,
-    flagRegion: store.getNamedFlagRegion,
-    enemyTurn: true,
-  }
-  requestAutomove(config).then(result => {
-    console.log(result)
-    store.makeMove(result.bestmove)
-    if(result.ponder) {
-      setTimeout(() => store.makeMove(result.ponder), 500);
-    }
-  })
+</script>
+
+<style lang="css">
+.c-chesspiece-slot__wrapper {
+    position: relative;
+    width: 100%;
+    padding-bottom: 100%;
 }
 
-</script>
+.c-chesspiece-slot {
+    position: absolute;
+    inset: 0;
+}
+
+.c-chesspiece-slot__wrapper--factory {
+    width: 80px;
+}
+</style>

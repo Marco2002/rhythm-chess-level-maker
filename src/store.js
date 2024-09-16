@@ -16,6 +16,7 @@ export const useStore = defineStore('counter', () => {
     const minTurns = ref(-1)
     const playMode = ref(false)
     const backupFen = ref('8/8/8/8/8/8/8/8')
+    const drawerOpen = ref(true);
 
     // getters 
     const getNamedDisabledFields = computed(() => {
@@ -106,7 +107,7 @@ export const useStore = defineStore('counter', () => {
         requestEvaluate(config).then(res => {
             winnable.value = res.winnable
             minTurns.value = res.minTurns
-        }).catch((err) => {
+        }).catch(() => {
             winnable.value = false;
             minTurns.value = -1;
         })
@@ -160,9 +161,12 @@ export const useStore = defineStore('counter', () => {
         }
         fen.value = ranks.join('/')
     })
+    watch(playMode, () => {
+        drawerOpen.value = !playMode.value
+      })
 
     return {
-        levelName, fen, width, height, position, disabledFields, flagRegion, winnable, minTurns, playMode, backupFen,
+        levelName, fen, width, height, position, disabledFields, flagRegion, winnable, minTurns, playMode, backupFen, drawerOpen,
         getNamedDisabledFields, getNamedFlagRegion,
         setWidth, setHeight, removePiece, addPiece, toggleDisabled, toggleFlag, play, reset, makeMove, evaluate
     }

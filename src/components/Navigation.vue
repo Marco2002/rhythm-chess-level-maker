@@ -1,6 +1,6 @@
 <template>
-<v-navigation-drawer :width="$vuetify.display.mobile ? 350 : 400" v-model="drawerOpen" :location="$vuetify.display.mobile ? 'bottom' : undefined">
-    <div class="pa-8" v-show="drawerOpen">
+<v-navigation-drawer :width="$vuetify.display.mobile ? 350 : 400" v-model="store.drawerOpen" :location="$vuetify.display.mobile ? 'bottom' : undefined">
+    <div class="pa-8">
       <h2 class="text-center pb-4">Configuration</h2>
       <v-text-field label="level name" variant="outlined" v-model="store.levelName"></v-text-field>
 
@@ -30,16 +30,10 @@
 </template>
 
 <script setup>
-import { watch, ref } from 'vue'
 import { useStore } from '@/store'
 import { requestGenerate } from '@/socket'
 
 const store = useStore()
-const drawerOpen = ref(true)
-
-watch(() => store.playMode, () => {
-  drawerOpen.value = !store.playMode
-})
 
 function generate() {
   const config = {

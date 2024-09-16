@@ -24,6 +24,10 @@ import { watch, ref } from 'vue'
 import { useStore } from '@/store'
 import ChesspieceSlot from '@/components/ChesspieceSlot.vue';
 import { useWindowSize } from '@vueuse/core'
+import { useDisplay } from 'vuetify';
+
+const { mdAndUp } = useDisplay();
+
 
 const { height, width } = useWindowSize()
 
@@ -53,11 +57,10 @@ const rightClickHandler = (event, x, y) => {
     store.toggleFlag(x-1,y-1)
 }
 
-const maxWidth = ref(store.width/store.height * (height.value * 0.6) + 'px')
+const maxWidth = ref(store.width/store.height * height.value * (mdAndUp.value ?  0.8 : 0.6) + 'px')
 
 watch([() => store.width, () => store.height, height, width], () => {
-    maxWidth.value = store.width/store.height * (height.value * 0.6) + 'px';
-    console.log(maxWidth.value)
+    maxWidth.value = store.width/store.height * height.value * (mdAndUp.value ?  0.8 : 0.6) + 'px';
 })
 
 </script>

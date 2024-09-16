@@ -5,21 +5,19 @@
       <chesspiece-toolbar v-show="!store.playMode"/>
       
       <div class="flex grow flex-col-reverse gap-4 md:flex-row grow items-center justify-center md:mx-4">
-        <div class="flex gap-4 items-center">
+        <div class="flex items-center gap-4">
           <v-btn 
             :icon="store.playMode ? 'mdi-restore': 'mdi-play'" 
             @click="store.playMode ? store.reset() : store.play()"
             :color="store.playMode ? 'red' : 'primary'"
           ></v-btn>
-          <div class="flex flex-col gap-4">
-            <v-btn 
-              v-show="store.playMode"
+          <div v-if="store.playMode" class="flex flex-col gap-4">
+            <v-btn
               size="large"
               rounded="xl"
               @click="automove(false)"
             >AUTO</v-btn>
             <v-btn 
-              v-show="store.playMode"
               size="large"
               rounded="xl"
               @click="automove(true)"
@@ -62,23 +60,31 @@
         
       </div>
     </v-main>
+    <div v-if="smAndDown" class="w-full absolute bottom-0 flex justify-center">
+      <v-btn 
+        icon="mdi-chevron-up"
+        color="primary"
+        variant="plain"
+        density="compact"
+        size="x-large"
+        @click="store.drawerOpen = true"
+      ></v-btn>
+    </div>
+    
   </v-app>
 </template>
 
 <script setup>
-import { computed, onMounted, watch, ref } from 'vue'
+import { computed, onMounted } from 'vue'
 import Chessboard from '@/components/Chessboard.vue'
 import ChesspieceToolbar from '@/components/ChesspieceToolbar.vue'
 import Navigation from '@/components/Navigation.vue'
 import { useStore } from '@/store'
 import { requestAutomove } from './socket'
+import { useDisplay } from 'vuetify';
 
 const store = useStore()
-const drawerOpen = ref(true)
-
-watch(() => store.playMode, () => {
-  drawerOpen.value = !store.playMode
-})
+const { smAndDown } = useDisplay(); 
 
 function automove(cpu) {
   const config = {

@@ -37,6 +37,10 @@ mobilityRegionWhiteCustomPiece2 = ${mobilityRegion}
 mobilityRegionWhiteCustomPiece3 = ${mobilityRegion}
 mobilityRegionWhiteCustomPiece4 =  ${mobilityRegion}
 mobilityRegionWhiteCustomPiece5 = ${mobilityRegion}
+nFoldRule = 1
+nFoldValue = win
+nFoldValueAbsolute = true
+nMoveRule = 0
 
 immobilityIllegal = true
 
@@ -46,7 +50,7 @@ passOnStalemateWhite = true
 maxRank = ${config.maxRank}
 maxFile = ${config.maxFile}
 
-startFen = ${config.fen} ${config.cpuTurn ? 'w' : 'b'} - - 0 1`
+startFen = ${config.fen} b - - 0 1`
 
     return new Promise(function(resolve, reject) {
         fs.writeFile("./backend/output/variants.ini", variantsIni, function(err) {

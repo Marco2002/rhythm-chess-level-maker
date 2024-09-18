@@ -2,7 +2,6 @@ import {spawn} from 'child_process'
 
 // a negative value in evaluation means black looses a posite means black wins
 const depth = 40
-let lastScore;
 
 export default function evaluate() {
     const fairyStockfish = spawn('./backend/stockfish')
@@ -20,23 +19,29 @@ export default function evaluate() {
             if(data.toString().includes('info depth ')) {
                 const infoStrings = data.toString().split('\n').filter(s => s.includes('score '))
                 infoStrings.forEach(s => {
-                    lastScore = s.split(' ')[8] + ' ' + s.split(' ')[9]
                     const currentDepth = s.split(' ')[2]              
-                    if(currentDepth == depth) {
-                        let result = {}
-                        fairyStockfish.stdin.end()
-                        fairyStockfish.kill()
-                        if(lastScore.split(' ')[0] == 'mate' && parseInt(lastScore.split(' ')[1]) > 0) {
-                            result.winnable = true;
-                            result.minTurns = parseInt(lastScore.split(' ')[1])
-                            resolve(result)
-                        } else {
-                            result.winnable = false
-                            resolve(result)
+                    if(currentDepth != depth) return
+
+                    const lastScore = {
+                        result: s.split(' ')[8],
+                        numberOfMoves: s.split(' ')[9]
+                    }
+                    let result = {}
+                    fairyStockfish.stdin.end()
+                    fairyStockfish.kill()
+                    if(lastScore.result == 'mate' && parseInt(lastScore.numberOfMoves) > 0) {
+                        result.winnable = true;
+                        result.minTurns = parseInt(lastScore.numberOfMoves)
+                        result.solution = []
+                        for(let i = 0; i < result.minTurns; i++) {
+                            result.solution.push(s.split(' ')[19 + 2*i].slice(0,4))
                         }
+                        resolve(result)
+                    } else {
+                        result.winnable = false
+                        resolve(result)
                     }
                 })
-    
             }
         })   
     })

@@ -17,7 +17,7 @@ import { createApp } from 'vue'
 import './index.css'
 
 // init websocket
-import './socket'
+import './scripts/socketManager'
 
 const app = createApp(App)
 

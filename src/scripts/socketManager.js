@@ -8,6 +8,13 @@ function destructMessageAndResolve(resolve) {
     }
 }
 
+function logAndReject(reject) {
+    return (error) => {
+        console.error(error)
+        reject(error)
+    }
+}
+
 socket.onopen = function(e) {
     console.log("connection established")
     socket.send("connection established");
@@ -18,12 +25,12 @@ socket.onmessage = (message) => {console.log(message); console.log('no callback 
 
 export function requestEvaluate(config) {
     if(evaluateOverflow) 
-        return new Promise((resolve, reject) => reject);
+        return new Promise((resolve, reject) => logAndReject(reject));
     evaluateOverflow = true
     socket.send('evl ' + JSON.stringify(config))
     return new Promise((resolve, reject) => {
         socket.onmessage = destructMessageAndResolve(resolve)
-        socket.onerror = reject
+        socket.onerror = logAndReject(reject)
     })
 }
 
@@ -31,11 +38,11 @@ export function requestGenerate(config) {
     socket.send('gen ' + JSON.stringify(config))
 }
 
-export function requestAutomove(config) {
+export function requestMovelist(config) {
     socket.send('mov ' + JSON.stringify(config))
     return new Promise((resolve, reject) => {
         socket.onmessage = destructMessageAndResolve(resolve)
-        socket.onerror = reject
+        socket.onerror = logAndReject(reject)
     })
 }
 

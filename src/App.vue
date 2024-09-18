@@ -3,32 +3,33 @@
     <navigation></navigation>
     <v-main class="flex flex-col md:flex-row content-center justify-items-center items-center main-content md:mx-12 gap-4">
       <chesspiece-toolbar v-show="!store.playMode"/>
-      
-      <div class="flex grow flex-col-reverse gap-4 md:flex-row grow items-center justify-center md:mx-4">
-        <div class="flex items-center gap-4">
+      <div class="flex items-center gap-4">
           <v-btn 
             :icon="store.playMode ? 'mdi-restore': 'mdi-play'" 
-            @click="store.playMode ? store.reset() : store.play()"
+            @click="store.playMode ? endPlay() : startPlay()"
             :color="store.playMode ? 'red' : 'primary'"
+            :disabled="store.winnable !== true"
+            variant="outlined"
           ></v-btn>
-          <div v-if="store.playMode" class="flex flex-col gap-4">
-            <v-btn
-              size="large"
-              rounded="xl"
-              @click="automove(false)"
-            >AUTO</v-btn>
-            <v-btn 
-              size="large"
-              rounded="xl"
-              @click="automove(true)"
-            >CPU MOVE</v-btn>
-          </div>
+          <v-btn 
+            size="large"
+            rounded="xl"
+            @click="automoveCpu"
+            v-if="store.playMode"
+          >CPU MOVE</v-btn>
+          <v-btn 
+            size="large"
+            rounded="xl"
+            @click="solve"
+            v-if="store.playMode"
+          >SOLVE</v-btn>
         </div>
+      
+      <div class="flex grow flex-col-reverse gap-4 md:flex-row grow items-center justify-center md:mx-4">
+        
         <div class="flex grow flex-col gap-4 align-center">
           <Chessboard/>
           <div class="text-center flex align-center gap-2">
-
-              
               <v-chip 
                 variant="outlined"
                 :class="winnableColor"
@@ -71,6 +72,7 @@
       ></v-btn>
     </div>
     
+    <loading-overlay :model-value="store.loading"/>
   </v-app>
 </template>
 
@@ -79,28 +81,50 @@ import { computed, onMounted } from 'vue'
 import Chessboard from '@/components/Chessboard.vue'
 import ChesspieceToolbar from '@/components/ChesspieceToolbar.vue'
 import Navigation from '@/components/Navigation.vue'
+import LoadingOverlay from './components/LoadingOverlay.vue'
 import { useStore } from '@/store'
-import { requestAutomove } from './socket'
+import { requestMovelist } from './scripts/socketManager'
 import { useDisplay } from 'vuetify';
+import MoveManager from './scripts/moveManager'
 
 const store = useStore()
-const { smAndDown } = useDisplay(); 
+const { smAndDown } = useDisplay();
+let moveManager
 
-function automove(cpu) {
+const delay = millis => new Promise((resolve) => {
+  setTimeout(_ => resolve(), millis)
+});
+
+function automoveCpu() {
+  store.makeMove(moveManager.getMoveOpponent(store.fen))
+}
+
+async function solve() {
+  for(let i = 0; i < store.solution.length; i++) {
+    store.makeMove(store.solution[i])
+    await delay(500)
+    automoveCpu()
+    await delay(500)
+  }
+}
+
+async function startPlay() {
+  store.loading = true;
+  store.play()
   const config = {
     fen: store.fen,
     maxRank: store.height,
     maxFile: store.width,
     disabledFields: store.getNamedDisabledFields,
     flagRegion: store.getNamedFlagRegion,
-    cpuTurn: cpu
   }
-  requestAutomove(config).then(result => {
-    store.makeMove(result.bestmove)
-    if(result.ponder && !cpu) {
-      setTimeout(() => store.makeMove(result.ponder), 500);
-    }
-  })
+  const movelistOpponent = await requestMovelist(config)
+  moveManager = new MoveManager(movelistOpponent)
+  store.loading = false;
+}
+
+function endPlay() {
+  store.reset()
 }
 
 const winnableIcon = computed(() => {
@@ -113,10 +137,11 @@ const winnableColor = computed(() => {
 onMounted(() => {
   document.addEventListener("keydown", (event) => {
     if(event.code == 'Space' && store.playMode) {
-      automove(true)
+      automoveCpu()
     }
   })
 })
+
 </script>
 <style scoped>
 @-webkit-keyframes rotating /* Safari and Chrome */ {

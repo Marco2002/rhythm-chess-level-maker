@@ -1,7 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, watch, computed } from 'vue'
-import { fenToPosition, positionToFen, namedFieldToNumberedField, numberedFieldToNamedField} from '@/helperFunctions'
-import { requestEvaluate } from './socket'
+import { fenToPosition, positionToFen, namedFieldToNumberedField, numberedFieldToNamedField} from '@/scripts/fenManager'
+import { requestEvaluate } from './scripts/socketManager'
 
 export const useStore = defineStore('counter', () => {
     // props
@@ -14,9 +14,11 @@ export const useStore = defineStore('counter', () => {
     const flagRegion = ref([])
     const winnable = ref('unkown')
     const minTurns = ref(-1)
+    const solution = ref([])
     const playMode = ref(false)
     const backupFen = ref('8/8/8/8/8/8/8/8')
     const drawerOpen = ref(true);
+    const loading = ref(false)
 
     // getters 
     const getNamedDisabledFields = computed(() => {
@@ -107,6 +109,7 @@ export const useStore = defineStore('counter', () => {
         requestEvaluate(config).then(res => {
             winnable.value = res.winnable
             minTurns.value = res.minTurns
+            solution.value = res.solution
         }).catch(() => {
             winnable.value = false;
             minTurns.value = -1;
@@ -166,7 +169,7 @@ export const useStore = defineStore('counter', () => {
       })
 
     return {
-        levelName, fen, width, height, position, disabledFields, flagRegion, winnable, minTurns, playMode, backupFen, drawerOpen,
+        levelName, fen, width, height, position, disabledFields, flagRegion, winnable, minTurns, solution, playMode, backupFen, drawerOpen, loading,
         getNamedDisabledFields, getNamedFlagRegion,
         setWidth, setHeight, removePiece, addPiece, toggleDisabled, toggleFlag, play, reset, makeMove, evaluate
     }

@@ -31,7 +31,7 @@
 
 <script setup>
 import { useStore } from '@/store'
-import { requestGenerate } from '@/socket'
+import { requestGenerate } from '@/scripts/socketManager'
 
 const store = useStore()
 

@@ -3,12 +3,13 @@
     <navigation></navigation>
     <v-main class="flex flex-col md:flex-row content-center justify-items-center items-center main-content md:mx-12 gap-4">
       <chesspiece-toolbar v-show="!store.playMode"/>
-      <div class="flex items-center gap-4">
+      <div class="flex flex-col-reverse md:flex-row content-center justify-items-center items-center gap-4 w-full">
+        <div class="flex items-center gap-4">
           <v-btn 
             :icon="store.playMode ? 'mdi-restore': 'mdi-play'" 
             @click="store.playMode ? endPlay() : startPlay()"
             :color="store.playMode ? 'red' : 'primary'"
-            :disabled="store.winnable !== true"
+            :disabled="!store.playMode && store.winnable !== true"
             variant="outlined"
           ></v-btn>
           <v-btn 
@@ -24,41 +25,42 @@
             v-if="store.playMode"
           >SOLVE</v-btn>
         </div>
-      
-      <div class="flex grow flex-col-reverse gap-4 md:flex-row grow items-center justify-center md:mx-4">
         
-        <div class="flex grow flex-col gap-4 align-center">
-          <Chessboard/>
-          <div class="text-center flex align-center gap-2">
-              <v-chip 
-                variant="outlined"
-                :class="winnableColor"
-              >
-                <template v-slot:prepend>
-                  <v-icon :icon="winnableIcon" :class="{
-                    'rotating': store.winnable === 'unkown',
-                    '-ml-2 mr-2': true,
-                  }"></v-icon>
-                </template>
-                Winnable
-              </v-chip>
-              <v-chip 
-                v-show="store.winnable === true"
-                variant="outlined"
-                class="text-green"
-              >
-                minimum number of turns: {{ store.minTurns }}
-              </v-chip>
-            <v-btn 
-              size="small"
-              icon="mdi-refresh"
-              color="primary"
-              density="comfortable"
-              @click="store.evaluate"
-            ></v-btn>
+        <div class="flex grow flex-col-reverse gap-4 md:flex-row grow items-center justify-center md:mx-4">
+          
+          <div class="flex grow flex-col gap-4 align-center">
+            <Chessboard/>
+            <div class="text-center flex align-center gap-2" v-show="!store.playMode">
+                <v-chip 
+                  variant="outlined"
+                  :class="winnableColor"
+                >
+                  <template v-slot:prepend>
+                    <v-icon :icon="winnableIcon" :class="{
+                      'rotating': store.winnable === 'unkown',
+                      '-ml-2 mr-2': true,
+                    }"></v-icon>
+                  </template>
+                  Winnable
+                </v-chip>
+                <v-chip 
+                  v-show="store.winnable === true"
+                  variant="outlined"
+                  class="text-green"
+                >
+                  minimum number of turns: {{ store.minTurns }}
+                </v-chip>
+              <v-btn 
+                size="small"
+                icon="mdi-refresh"
+                color="primary"
+                density="comfortable"
+                @click="store.evaluate"
+              ></v-btn>
+            </div>
           </div>
+          
         </div>
-        
       </div>
     </v-main>
     <div v-if="smAndDown" class="w-full absolute bottom-0 flex justify-center">

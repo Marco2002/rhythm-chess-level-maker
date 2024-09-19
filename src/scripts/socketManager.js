@@ -1,5 +1,28 @@
-const socket = new WebSocket('ws://localhost:8080');
+const hrefData = window.location.href.split('/')
+const ip = hrefData[2].split(':')[0]
+let evaluationRequestStack = [];
+
+let socket = null;
 let evaluateOverflow = false;
+
+function connect() {
+    socket = new WebSocket(`ws://${ip}:8080`);
+    
+    socket.onopen = function() {
+        console.log("connection established")
+        socket.send("connection established");
+    }
+
+    socket.onclose = function() {
+        console.log("socket disconnected")
+        connect()
+    }
+
+    socket.onerror = (err) => {console.log(err)}
+    socket.onmessage = (message) => {console.log(message); console.log('no callback set')}
+}
+
+connect();
 
 function destructMessageAndResolve(resolve) {
     return (message) => {
@@ -15,23 +38,10 @@ function logAndReject(reject) {
     }
 }
 
-socket.onopen = function(e) {
-    console.log("connection established")
-    socket.send("connection established");
-}
-
-socket.onerror = (err) => {console.log(err); console.log('no error callback set')}
-socket.onmessage = (message) => {console.log(message); console.log('no callback set')}
-
 export function requestEvaluate(config) {
-    if(evaluateOverflow) 
-        return new Promise((resolve, reject) => logAndReject(reject));
-    evaluateOverflow = true
-    socket.send('evl ' + JSON.stringify(config))
     return new Promise((resolve, reject) => {
-        socket.onmessage = destructMessageAndResolve(resolve)
-        socket.onerror = logAndReject(reject)
-    })
+        evaluationRequestStack.push({config, resolve, reject})
+    }) 
 }
 
 export function requestGenerate(config) {
@@ -46,4 +56,16 @@ export function requestMovelist(config) {
     })
 }
 
-setInterval(() => evaluateOverflow = false, 1000)
+function makeEvaluationRequest() {
+    if(evaluationRequestStack.length == 0) return;
+    const {config, resolve, reject} = evaluationRequestStack.pop();
+    evaluationRequestStack = []
+    socket.send('evl ' + JSON.stringify(config))
+    evaluationRequestStack.forEach(evalData => {
+        evalData.reject()
+    })
+    socket.onmessage = destructMessageAndResolve(resolve)
+    socket.onerror = logAndReject(reject)
+}
+
+setInterval(makeEvaluationRequest, 1000)

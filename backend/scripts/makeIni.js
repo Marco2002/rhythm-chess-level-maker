@@ -37,9 +37,7 @@ mobilityRegionWhiteCustomPiece2 = ${mobilityRegion}
 mobilityRegionWhiteCustomPiece3 = ${mobilityRegion}
 mobilityRegionWhiteCustomPiece4 =  ${mobilityRegion}
 mobilityRegionWhiteCustomPiece5 = ${mobilityRegion}
-nFoldRule = 1
-nFoldValue = win
-nFoldValueAbsolute = true
+nFoldRule = 0
 nMoveRule = 0
 
 immobilityIllegal = true

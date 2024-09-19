@@ -1,12 +1,8 @@
-const hrefData = window.location.href.split('/')
-const ip = hrefData[2].split(':')[0]
 let evaluationRequestStack = [];
-
 let socket = null;
-let evaluateOverflow = false;
 
 function connect() {
-    socket = new WebSocket(`ws://${ip}:8080`);
+    socket = new WebSocket(`ws://${import.meta.env.VITE_IP_ADDRESS}:8080`);
     
     socket.onopen = function() {
         console.log("connection established")

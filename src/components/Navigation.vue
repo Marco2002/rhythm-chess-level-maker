@@ -23,7 +23,7 @@
         <v-text-field label="disabled fields" variant="outlined" v-model="store.getNamedDisabledFields" disabled></v-text-field>
         <v-text-field label="flag region" variant="outlined" v-model="store.getNamedFlagRegion" disabled></v-text-field>
       </div>
-      <v-btn class="w-full my-2" @click="generate">generate file</v-btn>
+      <v-btn class="w-full my-2" v-if="showGenerateButton" @click="generate">generate file</v-btn>
     </div>
     
   </v-navigation-drawer>
@@ -34,6 +34,8 @@ import { useStore } from '@/store'
 import { requestGenerate } from '@/scripts/socketManager'
 
 const store = useStore()
+
+const showGenerateButton = !(import.meta.env.VITE_PUBLIC_VERSION == 'true')
 
 function generate() {
   const config = {

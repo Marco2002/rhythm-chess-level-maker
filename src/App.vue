@@ -1,10 +1,10 @@
 <template>
     <v-app>
-        <navigation></navigation>
+        <c-navigation />
         <v-main
             class="flex flex-col md:flex-row content-center justify-items-center items-center main-content md:mx-12 gap-4"
         >
-            <chesspiece-toolbar v-show="!store.playMode" />
+            <c-chesspiece-toolbar v-show="!store.playMode" />
             <div
                 class="flex flex-col-reverse md:flex-row content-center justify-items-center items-center gap-4 w-full"
             >
@@ -36,7 +36,7 @@
                     class="flex grow flex-col-reverse gap-4 md:flex-row grow items-center justify-center md:mx-4"
                 >
                     <div class="flex grow flex-col gap-4 align-center">
-                        <Chessboard />
+                        <c-chessboard />
                         <div
                             class="text-center flex align-center gap-2"
                             v-show="!store.playMode"
@@ -87,16 +87,16 @@
             ></v-btn>
         </div>
 
-        <loading-overlay :model-value="store.loading" />
+        <c-loading-overlay :model-value="store.loading" />
     </v-app>
 </template>
 
 <script setup>
 import { computed, onMounted, watch } from "vue"
-import Chessboard from "@/components/Chessboard.vue"
-import ChesspieceToolbar from "@/components/ChesspieceToolbar.vue"
-import Navigation from "@/components/Navigation.vue"
-import LoadingOverlay from "./components/LoadingOverlay.vue"
+import CChessboard from "@/components/CChessboard.vue"
+import CChesspieceToolbar from "@/components/CChesspieceToolbar.vue"
+import CNavigation from "@/components/CNavigation.vue"
+import CLoadingOverlay from "./components/CLoadingOverlay.vue"
 import { useStore } from "@/store"
 import { requestMovelist } from "./scripts/socketManager"
 import { useDisplay } from "vuetify"
@@ -164,7 +164,7 @@ onMounted(() => {
 
 watch(
     () => store.fen,
-    (newVal, oldVal) => {
+    (newVal) => {
         if (store.playMode || newVal == store.backupFen) return
         moveManager = null
     },

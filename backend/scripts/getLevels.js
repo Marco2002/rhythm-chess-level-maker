@@ -1,7 +1,7 @@
-import fs from 'fs/promises';
+import fs from "fs/promises"
 
-const filePath = './backend/levels.json'
+const filePath = "./backend/levels.json"
 
 export default function getLevels() {
-    return fs.readFile(filePath, ('utf8'))
+    return fs.readFile(filePath, "utf8")
 }

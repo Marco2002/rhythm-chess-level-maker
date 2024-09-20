@@ -1,35 +1,37 @@
 {
-  "name": "rhythm-chess-level-maker",
-  "version": "0.0.0",
-  "scripts": {
-    "dev": "vite --host",
-    "build": "vite build",
-    "preview": "vite preview",
-    "backend": "nodemon backend/main.js"
-  },
-  "dependencies": {
-    "@mdi/font": "7.0.96",
-    "@vueuse/core": "^11.1.0",
-    "pinia": "^2.1.7",
-    "roboto-fontface": "*",
-    "vue": "^3.2.0",
-    "vuedraggable": "^4.1.0",
-    "vuetify": "^3.0.0",
-    "ws": "^8.15.1"
-  },
-  "devDependencies": {
-    "@eslint/js": "^9.10.0",
-    "@vitejs/plugin-vue": "^4.0.0",
-    "autoprefixer": "^10.4.16",
-    "eslint": "^9.10.0",
-    "eslint-config-prettier": "^9.1.0",
-    "eslint-plugin-prettier": "^5.2.1",
-    "eslint-plugin-vue": "^9.28.0",
-    "globals": "^15.9.0",
-    "postcss": "^8.4.32",
-    "tailwindcss": "^3.3.6",
-    "unplugin-fonts": "^1.0.3",
-    "vite": "^4.2.0",
-    "vite-plugin-vuetify": "^1.0.0"
-  }
+    "name": "rhythm-chess-level-maker",
+    "version": "0.0.0",
+    "scripts": {
+        "dev": "vite --host",
+        "build": "vite build",
+        "preview": "vite preview",
+        "backend": "nodemon backend/main.js",
+        "lint": "eslint .",
+        "lint:fix": "eslint . --fix && prettier --write '**/*.{js,mjs,cjs,vue}'"
+    },
+    "dependencies": {
+        "@mdi/font": "7.0.96",
+        "@vueuse/core": "^11.1.0",
+        "pinia": "^2.1.7",
+        "roboto-fontface": "*",
+        "vue": "^3.2.0",
+        "vuedraggable": "^4.1.0",
+        "vuetify": "^3.0.0",
+        "ws": "^8.15.1"
+    },
+    "devDependencies": {
+        "@eslint/js": "^9.10.0",
+        "@vitejs/plugin-vue": "^4.0.0",
+        "autoprefixer": "^10.4.16",
+        "eslint": "^9.10.0",
+        "eslint-config-prettier": "^9.1.0",
+        "eslint-plugin-prettier": "^5.2.1",
+        "eslint-plugin-vue": "^9.28.0",
+        "globals": "^15.9.0",
+        "postcss": "^8.4.32",
+        "tailwindcss": "^3.3.6",
+        "unplugin-fonts": "^1.0.3",
+        "vite": "^4.2.0",
+        "vite-plugin-vuetify": "^1.0.0"
+    }
 }

@@ -116,7 +116,6 @@
 <script setup>
 import { useStore } from "@/store"
 import { requestGenerate } from "@/scripts/socketManager"
-import { ref } from "vue"
 
 const store = useStore()
 

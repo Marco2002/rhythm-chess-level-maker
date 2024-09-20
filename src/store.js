@@ -91,10 +91,12 @@ export const useStore = defineStore("counter", () => {
     }
 
     function setup() {
-        return new Promise(async (resolve, reject) => {
-            levels.value = await requestGetLevels()
-            loadLevel(selectedLevel.value)
-            resolve()
+        return new Promise((resolve) => {
+            requestGetLevels().then((value) => {
+                levels.value = value
+                loadLevel(selectedLevel.value)
+                resolve()
+            })
         })
     }
 

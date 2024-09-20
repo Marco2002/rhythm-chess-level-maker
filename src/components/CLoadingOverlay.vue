@@ -1,5 +1,8 @@
 <template>
-    <div class="c-loading-overlay bg-black/50 backdrop-blur-sm" v-show="modelValue">
+    <div
+        class="c-loading-overlay bg-black/50 backdrop-blur-sm"
+        v-show="modelValue"
+    >
         <v-progress-circular
             :size="70"
             :width="7"
@@ -10,9 +13,8 @@
 
 <script setup>
 defineProps({
-    modelValue: Boolean
+    modelValue: Boolean,
 })
-
 </script>
 <style lang="css" scoped>
 .c-loading-overlay {

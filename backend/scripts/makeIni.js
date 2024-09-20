@@ -1,21 +1,21 @@
-import fs from 'fs'
+import fs from "fs"
 
 export default function makeIni(config) {
-    let mobilityRegion = ''
-    for(let y = 0; y < config.maxRank; y++) {
-        for(let x = 0; x < config.maxFile; x++) {
-            mobilityRegion += ' ' + String.fromCharCode(97 + x) + (y+1)
+    let mobilityRegion = ""
+    for (let y = 0; y < config.maxRank; y++) {
+        for (let x = 0; x < config.maxFile; x++) {
+            mobilityRegion += " " + String.fromCharCode(97 + x) + (y + 1)
         }
     }
-    config.disabledFields.forEach(disabledField => {
-        mobilityRegion = mobilityRegion.replace(disabledField, '')
+    config.disabledFields.forEach((disabledField) => {
+        mobilityRegion = mobilityRegion.replace(disabledField, "")
     })
 
-    mobilityRegion = mobilityRegion.replace(/\s\s+/g, ' ').trim()
+    mobilityRegion = mobilityRegion.replace(/\s\s+/g, " ").trim()
 
-    let flagRegionString = ''
-    config.flagRegion.forEach(field => {
-        flagRegionString += field+' '
+    let flagRegionString = ""
+    config.flagRegion.forEach((field) => {
+        flagRegionString += field + " "
     })
     flagRegionString = flagRegionString.trim()
 
@@ -50,13 +50,17 @@ maxFile = ${config.maxFile}
 
 startFen = ${config.fen} b - - 0 1`
 
-    return new Promise(function(resolve, reject) {
-        fs.writeFile("./backend/output/variants.ini", variantsIni, function(err) {
-            if(err) {
-                reject(err)
-            }
-            console.log("variants.ini successfully generated");
-            resolve()
-        })
+    return new Promise(function (resolve, reject) {
+        fs.writeFile(
+            "./backend/output/variants.ini",
+            variantsIni,
+            function (err) {
+                if (err) {
+                    reject(err)
+                }
+                console.log("variants.ini successfully generated")
+                resolve()
+            },
+        )
     })
 }

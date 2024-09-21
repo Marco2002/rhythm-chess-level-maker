@@ -5,6 +5,15 @@ const depth = 40
 
 export default function evaluate() {
     const fairyStockfish = spawn("./backend/stockfish")
+
+    fairyStockfish.on("error", (err) => {
+        console.error(`Failed to start subprocess: ${err}`)
+    })
+
+    fairyStockfish.on("exit", (code) => {
+        console.log(`Child process exited with code ${code}`)
+    })
+
     // Input
     fairyStockfish.stdin.write("load backend/output/variants.ini\n")
     fairyStockfish.stdin.write("uci\n")

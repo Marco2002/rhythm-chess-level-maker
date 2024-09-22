@@ -4,7 +4,7 @@
     "scripts": {
         "dev": "vite --host",
         "build": "vite build",
-        "preview": "vite preview --host",
+        "preview": "vite preview --host 0.0.0.0",
         "backend": "nodemon backend/main.js",
         "lint": "eslint .",
         "lint:fix": "eslint . --fix && prettier --write '**/*.{js,mjs,cjs,vue}'"

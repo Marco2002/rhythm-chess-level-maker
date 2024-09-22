@@ -1,4 +1,6 @@
 import { WebSocketServer } from "ws"
+import fs from "fs"
+import https from "https"
 import process from "node:process"
 import makeIni from "./scripts/makeIni.js"
 import evaluate from "./scripts/positionEvaluator.js"
@@ -8,7 +10,14 @@ import csvToRcl from "./scripts/csvToRcl.js"
 import saveLevel from "./scripts/saveLevel.js"
 import getLevels from "./scripts/getLevels.js"
 
-const wss = new WebSocketServer({ port: 8080 })
+// Load your SSL certificate and private key
+const server = https.createServer({
+    cert: fs.readFileSync("./backend/cert.pem"),
+    key: fs.readFileSync("./backend/key.pem"),
+})
+
+// Create WebSocket Server using the `ws` module
+const wss = new WebSocketServer({ server })
 
 wss.on("connection", function connection(ws) {
     ws.on("error", console.log)
@@ -102,4 +111,9 @@ process.on("uncaughtException", (err) => {
 
 process.on("unhandledRejection", (reason, promise) => {
     console.error("Unhandled Rejection at:", promise, "reason:", reason)
+})
+
+// Server listens on port 443 (HTTPS)
+server.listen(8080, () => {
+    console.log("Server running on port 8080")
 })

@@ -3,7 +3,9 @@ let evaluationRequestStack = []
 let socket = null
 
 function connect() {
-    socket = new WebSocket(`wss://${import.meta.env.VITE_IP_ADDRESS}:8080`)
+    socket = new WebSocket(
+        `${import.meta.env.VITE_USE_WSS == "true" ? "wss" : "ws"}://${import.meta.env.VITE_IP_ADDRESS}:8080`,
+    )
 
     socket.onopen = function () {
         console.log("connection established")

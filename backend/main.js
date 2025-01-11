@@ -1,6 +1,7 @@
 import { WebSocketServer } from "ws"
 import fs from "fs"
 import https from "https"
+import http from "http" // For unencrypted ws
 import process from "node:process"
 import makeIni from "./scripts/makeIni.js"
 import evaluate from "./scripts/positionEvaluator.js"
@@ -10,11 +11,22 @@ import csvToRcl from "./scripts/csvToRcl.js"
 import saveLevel from "./scripts/saveLevel.js"
 import getLevels from "./scripts/getLevels.js"
 
-// Load your SSL certificate and private key
-const server = https.createServer({
-    cert: fs.readFileSync("./backend/cert.pem"),
-    key: fs.readFileSync("./backend/key.pem"),
-})
+// Check environment variable to determine whether to use wss or ws
+const useWSS = process.env.VITE_USE_WSS === "true"
+
+let server
+
+// Create the appropriate server based on the environment variable
+if (useWSS) {
+    server = https.createServer({
+        cert: fs.readFileSync("./backend/cert.pem"),
+        key: fs.readFileSync("./backend/key.pem"),
+    })
+    console.log("Using secure WebSocket server (wss)")
+} else {
+    server = http.createServer() // Unencrypted server for ws
+    console.log("Using unencrypted WebSocket server (ws)")
+}
 
 // Create WebSocket Server using the `ws` module
 const wss = new WebSocketServer({ server })
@@ -113,7 +125,7 @@ process.on("unhandledRejection", (reason, promise) => {
     console.error("Unhandled Rejection at:", promise, "reason:", reason)
 })
 
-// Server listens on port 443 (HTTPS)
+// Server listens on port 8080
 server.listen(8080, () => {
-    console.log("Server running on port 8080")
+    console.log(`Server running on port 8080 (${useWSS ? "wss" : "ws"})`)
 })

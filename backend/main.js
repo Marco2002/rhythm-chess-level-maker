@@ -3,13 +3,12 @@ import fs from "fs"
 import https from "https"
 import http from "http" // For unencrypted ws
 import process from "node:process"
-import makeIni from "./scripts/makeIni.js"
-import evaluate from "./scripts/positionEvaluator.js"
-import makeCsv from "./scripts/csvMaker.js"
-import getMovelist from "./scripts/getMovelist.js"
-import csvToRcl from "./scripts/csvToRcl.js"
-import saveLevel from "./scripts/saveLevel.js"
-import getLevels from "./scripts/getLevels.js"
+import makeIni from "./src/util/makeIni.js"
+import evaluate from "./src/commands/evl.js"
+import saveLevel from "./src/saveLevel.js"
+import getLevels from "./src/getLevels.js"
+import StockfishInstance from "./src/stockfishAPI.js"
+import generate from "./src/commands/gen.js"
 
 // Check environment variable to determine whether to use wss or ws
 const useWSS = process.env.VITE_USE_WSS === "true"
@@ -32,12 +31,13 @@ if (useWSS) {
 const wss = new WebSocketServer({ server })
 
 wss.on("connection", function connection(ws) {
+    const stockfishInstance = new StockfishInstance()
     ws.on("error", console.log)
     ws.on("close", () => {
         console.log("Client disconnected")
     })
 
-    ws.on("message", function message(msg) {
+    ws.on("message", async (msg) => {
         console.log("received: %s", msg)
         if (msg.toString() === "connection established") return
 
@@ -47,54 +47,39 @@ wss.on("connection", function connection(ws) {
                 : {}
 
         if (msg.toString().startsWith("evl")) {
-            makeIni(config)
-                .then(() => {
-                    return evaluate()
-                })
-                .then((res) => {
-                    ws.send(JSON.stringify(res))
-                })
-                .catch(console.log)
+            const res = await evaluate(stockfishInstance, config)
+            ws.send(JSON.stringify(res))
         }
 
         if (msg.toString().startsWith("gen")) {
-            makeIni(config)
-                .then(() => {
-                    return makeCsv(config)
-                })
-                .then(() => {
-                    return csvToRcl(config.levelName)
-                })
-                .then((res) => {
-                    ws.send(JSON.stringify(res))
-                })
-                .catch(console.log)
+            await generate(stockfishInstance, config)
+            ws.send("generation complete")
         }
 
-        if (msg.toString().startsWith("mov")) {
-            makeIni(config)
-                .then(() => {
-                    return getMovelist(config)
-                })
-                .then((movelistOpponent) => {
-                    const res = JSON.stringify(
-                        movelistOpponent,
-                        (key, value) => {
-                            if (value instanceof Map) {
-                                const returnValue = {}
-                                value.entries().forEach((e) => {
-                                    returnValue[e[0]] = e[1]
-                                })
-                                return returnValue
-                            } else {
-                                return value
-                            }
-                        },
-                    )
-                    ws.send(res)
-                })
-                .catch(console.error)
-        }
+        // if (msg.toString().startsWith("mov")) {
+        //     makeIni(config)
+        //         .then(() => {
+        //             return getMovelist(config)
+        //         })
+        //         .then((movelistOpponent) => {
+        //             const res = JSON.stringify(
+        //                 movelistOpponent,
+        //                 (key, value) => {
+        //                     if (value instanceof Map) {
+        //                         const returnValue = {}
+        //                         value.entries().forEach((e) => {
+        //                             returnValue[e[0]] = e[1]
+        //                         })
+        //                         return returnValue
+        //                     } else {
+        //                         return value
+        //                     }
+        //                 },
+        //             )
+        //             ws.send(res)
+        //         })
+        //         .catch(console.error)
+        // }
 
         if (msg.toString().startsWith("sav")) {
             saveLevel(config)

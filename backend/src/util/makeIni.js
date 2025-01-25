@@ -1,5 +1,6 @@
 import fs from "fs"
 
+// todo remove
 export default function makeIni(config) {
     let mobilityRegion = ""
     for (let y = 0; y < config.maxRank; y++) {

@@ -1,4 +1,3 @@
-import getMovelist from "./getMovelist.js"
 import fs from "fs"
 
 function removeXfromFen(fen) {
@@ -54,27 +53,25 @@ export default function makeCsv(data) {
     flagRegionStr = flagRegionStr.trim()
     disabledFieldStr = disabledFieldStr.trim()
     return new Promise((resolve) => {
-        getMovelist(data).then((matrix) => {
-            const end = Date.now()
+        const end = Date.now()
 
-            let csvContent = `${jsonData.maxRank},${jsonData.maxFile},${removeXfromFen(jsonData.fen)},${flagRegionStr},${disabledFieldStr}\n`
-            matrix.forEach((value, key) => {
-                csvContent += `${removeXfromFen(key)},${value}\n`
-            })
-            csvContent = csvContent.slice(0, -1)
-
-            fs.writeFile(
-                "backend/output/" + jsonData.levelName + ".csv",
-                csvContent,
-                function (err) {
-                    if (err) {
-                        return console.log(err)
-                    }
-                    console.log("csv successfully generated")
-                    console.log(`execution time: ${end - start} ms`)
-                    resolve()
-                },
-            )
+        let csvContent = `${jsonData.maxRank},${jsonData.maxFile},${removeXfromFen(jsonData.fen)},${flagRegionStr},${disabledFieldStr}\n`
+        jsonData.matrix.forEach((value, key) => {
+            csvContent += `${removeXfromFen(key)},${value}\n`
         })
+        csvContent = csvContent.slice(0, -1)
+
+        fs.writeFile(
+            "backend/output/" + jsonData.levelName + ".csv",
+            csvContent,
+            function (err) {
+                if (err) {
+                    return console.log(err)
+                }
+                console.log("csv successfully generated")
+                console.log(`execution time: ${end - start} ms`)
+                resolve()
+            },
+        )
     })
 }

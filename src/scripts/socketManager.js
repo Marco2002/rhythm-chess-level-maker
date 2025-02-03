@@ -54,14 +54,6 @@ export function requestGenerate(config) {
     socket.send("gen " + JSON.stringify(config))
 }
 
-export function requestMovelist(config) {
-    socket.send("mov " + JSON.stringify(config))
-    return new Promise((resolve, reject) => {
-        socket.onmessage = destructMessageAndResolve(resolve)
-        socket.onerror = logAndReject(reject)
-    })
-}
-
 export function requestSave(config) {
     socket.send("sav " + JSON.stringify(config))
     return new Promise((resolve, reject) => {

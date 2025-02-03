@@ -97,22 +97,22 @@ import CChessboard from "@/components/CChessboard.vue"
 import CChesspieceToolbar from "@/components/CChesspieceToolbar.vue"
 import CNavigation from "@/components/CNavigation.vue"
 import CLoadingOverlay from "./components/CLoadingOverlay.vue"
+import { requestEvaluate } from "@/scripts/socketManager.js"
 import { useStore } from "@/store"
-import { requestMovelist } from "./scripts/socketManager"
 import { useDisplay } from "vuetify"
-import MoveManager from "./scripts/moveManager"
 
 const store = useStore()
 const { smAndDown } = useDisplay()
-let moveManager = null
 
 const delay = (millis) =>
     new Promise((resolve) => {
         setTimeout(() => resolve(), millis)
     })
 
-function automoveCpu() {
-    store.makeMove(moveManager.getMoveOpponent(store.fen))
+async function automoveCpu() {
+    const res = await requestEvaluate(store.getConfig)
+    console.log("requested CPU move", store.getConfig, res)
+    store.makeMove(res.bestMove)
 }
 
 async function solve() {
@@ -125,14 +125,7 @@ async function solve() {
 }
 
 async function startPlay() {
-    store.loading = true
     store.play()
-    if (moveManager == null) {
-        const config = store.getConfig
-        const movelistOpponent = await requestMovelist(config)
-        moveManager = new MoveManager(movelistOpponent)
-    }
-    store.loading = false
 }
 
 function endPlay() {
@@ -166,7 +159,6 @@ watch(
     () => store.fen,
     (newVal) => {
         if (store.playMode || newVal == store.backupFen) return
-        moveManager = null
     },
 )
 </script>

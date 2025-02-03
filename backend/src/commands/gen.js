@@ -3,7 +3,7 @@ import csvToRcl from "../util/csvToRcl.js"
 
 export default async function generate(stockfishInstance, config) {
     const matrix = new Map()
-    const depth = 40
+    const depth = 25
     let callStack = []
     let fensWhereWhiteSkips = []
     let currentFen
@@ -53,7 +53,7 @@ export default async function generate(stockfishInstance, config) {
 
             function handleGoResponse(response) {
                 const bestMove = response.bestMove
-
+                stockfishInstance.clearHash()
                 if (
                     bestMove.includes("(none)") ||
                     bestMove.substring(0, 2) == bestMove.substring(2, 4)

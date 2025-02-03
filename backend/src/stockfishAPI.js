@@ -47,6 +47,7 @@ export default class StockfishInstance {
             this.fairyStockfish.stdin.write(
                 "setoption name UCI_Variant value 1RhythmChess\n",
             )
+            this.fairyStockfish.stdin.write("ucinewgame")
             this.fairyStockfish.stdin.write("position startpos\n")
             return new Promise((resolve) => {
                 this.fairyStockfish.stdout.on("data", (data) => {
@@ -80,6 +81,7 @@ export default class StockfishInstance {
                             .filter((s) => s.includes("score "))
                         infoStrings.forEach((s) => {
                             const currentDepth = s.split(" ")[2]
+
                             if (currentDepth != depth) return
 
                             const lastScore = {
@@ -117,6 +119,13 @@ export default class StockfishInstance {
             })
         })
         return result
+    }
+
+    /**
+     * clears hash table. Used to make response deterministic
+     */
+    clearHash() {
+        this.fairyStockfish.stdin.write("ucinewgame\n")
     }
 
     /**

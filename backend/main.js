@@ -56,31 +56,6 @@ wss.on("connection", function connection(ws) {
             ws.send("generation complete")
         }
 
-        // if (msg.toString().startsWith("mov")) {
-        //     makeIni(config)
-        //         .then(() => {
-        //             return getMovelist(config)
-        //         })
-        //         .then((movelistOpponent) => {
-        //             const res = JSON.stringify(
-        //                 movelistOpponent,
-        //                 (key, value) => {
-        //                     if (value instanceof Map) {
-        //                         const returnValue = {}
-        //                         value.entries().forEach((e) => {
-        //                             returnValue[e[0]] = e[1]
-        //                         })
-        //                         return returnValue
-        //                     } else {
-        //                         return value
-        //                     }
-        //                 },
-        //             )
-        //             ws.send(res)
-        //         })
-        //         .catch(console.error)
-        // }
-
         if (msg.toString().startsWith("sav")) {
             saveLevel(config)
                 .then(() => {

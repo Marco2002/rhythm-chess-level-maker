@@ -8,9 +8,10 @@
             v-model="pieceArr"
             tag="ul"
             :item-key="pieceHolderKey"
-            group="piece"
+            :group="{ name: 'piece', put: !disabled, pull: !disabled }"
             @end="drag = !isFactory"
             @change="handleChange"
+            @start="handleStart"
         >
             <template #item="{ element: p }">
                 <img
@@ -46,7 +47,10 @@ const props = defineProps({
     pieceName: String,
     x: Number,
     y: Number,
+    disabled: Boolean,
 })
+
+const emit = defineEmits(["pickedPlayer", "setPlayer"])
 
 let piece
 
@@ -117,10 +121,19 @@ function handleChange(event) {
     // change the position
     if (!props.isFactory) {
         if (event.added) {
+            if (store.playMode && pieceArr.value[0].value === "a") {
+                emit("setPlayer")
+            }
             store.addPiece(props.x, props.y, pieceArr.value[0].value)
         } else if (event.removed) {
             store.removePiece(props.x, props.y)
         }
+    }
+}
+
+function handleStart() {
+    if (store.playMode && pieceArr.value[0].value === "a") {
+        emit("pickedPlayer")
     }
 }
 </script>

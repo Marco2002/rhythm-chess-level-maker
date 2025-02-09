@@ -24,6 +24,9 @@
                     :x="x - 1"
                     :y="y - 1"
                     :piece-holder-key="`piece${x}-${y}`"
+                    :disabled="disabledSlotsMatrix[x - 1][y - 1]"
+                    @picked-player="playerIsMoving = true"
+                    @set-player="handlePlayerMove()"
                 />
 
                 <p v-if="x == 1" class="rank">{{ y }}</p>
@@ -36,7 +39,7 @@
 </template>
 
 <script setup>
-import { watch, ref } from "vue"
+import { watch, ref, computed } from "vue"
 import { useStore } from "@/store"
 import CChesspieceSlot from "@/components/CChesspieceSlot.vue"
 import { useWindowSize } from "@vueuse/core"
@@ -49,6 +52,8 @@ const { height, width } = useWindowSize()
 let store = useStore()
 let clicks = 0
 let timer
+
+const playerIsMoving = ref(false)
 
 const clickHandler = (event, x, y) => {
     if (store.playMode) return
@@ -83,6 +88,58 @@ watch([() => store.width, () => store.height, height, width], () => {
             (mdAndUp.value ? 0.8 : 0.6) +
         "px"
 })
+
+const disabledSlotsMatrix = computed(() => {
+    const res = Array.from({ length: store.width }, () =>
+        Array(store.height).fill(false),
+    )
+    let playerPosition
+    if (!store.playMode) return res
+
+    // in playmode disable all slots except player
+    for (let i = 0; i < store.width; i++) {
+        res[i] = []
+        for (let j = 0; j < store.height; j++) {
+            res[i][j] = true
+            if (store.position[j][i] === "a" && store.isPlayerTurn) {
+                playerPosition = { x: i, y: j }
+                res[i][j] = false
+            }
+        }
+    }
+
+    if (!store.isPlayerTurn || !playerIsMoving.value) return res
+    // while player is moving, enable valid destination slots
+    for (let i = 0; i < store.width; i++) {
+        for (let j = 0; j < store.height; j++) {
+            if (
+                i <= playerPosition.x + 1 &&
+                i >= playerPosition.x - 1 &&
+                j <= playerPosition.y + 1 &&
+                j >= playerPosition.y - 1
+            ) {
+                if (i === playerPosition.x && j === playerPosition.y) {
+                    continue
+                } else if (i !== playerPosition.x && j !== playerPosition.y) {
+                    // disable corners if no piece
+                    res[i][j] =
+                        store.position[j][i] === "none" ||
+                        store.position[j][i] === "x"
+                } else {
+                    // enable slots around player (not corners)
+                    res[i][j] = store.position[j][i] === "x"
+                }
+            }
+        }
+    }
+    return res
+})
+
+function handlePlayerMove() {
+    playerIsMoving.value = false
+    store.moveCount++
+    store.toggleTurn()
+}
 </script>
 
 <style>

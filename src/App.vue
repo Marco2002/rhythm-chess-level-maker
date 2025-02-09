@@ -9,7 +9,7 @@
                 class="flex flex-col-reverse md:flex-row content-center justify-items-center items-center gap-4 w-full"
             >
                 <div class="flex flex-col gap-8">
-                    <div class="flex items-center gap-4">
+                    <div class="flex gap-4">
                         <v-btn
                             :icon="store.playMode ? 'mdi-restore' : 'mdi-play'"
                             @click="store.playMode ? endPlay() : startPlay()"
@@ -21,6 +21,13 @@
                             variant="outlined"
                         ></v-btn>
                         <v-btn
+                            icon="mdi-lightbulb"
+                            color="success"
+                            :variant="solving ? 'elevated' : 'outlined'"
+                            @click="solve"
+                            v-if="store.playMode"
+                        ></v-btn>
+                        <v-btn
                             size="large"
                             rounded="xl"
                             @click="automove"
@@ -30,9 +37,9 @@
                         <v-btn
                             size="large"
                             rounded="xl"
-                            @click="solve"
+                            @click="automove"
                             v-if="store.playMode"
-                            >SOLVE</v-btn
+                            >PASS</v-btn
                         >
                     </div>
                     <div class="flex flex-col gap-4" v-if="store.playMode">
@@ -50,7 +57,7 @@
                             :variant="
                                 store.isPlayerTurn ? 'elevated' : 'outlined'
                             "
-                            color="green"
+                            color="success"
                             rounded="xl"
                             class="pointer-events-none"
                             @click.prevent
@@ -88,7 +95,7 @@
                                 variant="outlined"
                                 class="text-green"
                             >
-                                minimum number of turns: {{ store.minTurns }}
+                                minimum number of moves: {{ store.minMoves }}
                             </v-chip>
                             <v-btn
                                 size="small"
@@ -121,7 +128,7 @@
 </template>
 
 <script setup>
-import { computed, onMounted, watch } from "vue"
+import { computed, onMounted, watch, ref } from "vue"
 import CChessboard from "@/components/CChessboard.vue"
 import CChesspieceToolbar from "@/components/CChesspieceToolbar.vue"
 import CNavigation from "@/components/CNavigation.vue"
@@ -132,6 +139,8 @@ import { useDisplay } from "vuetify"
 
 const store = useStore()
 const { smAndDown } = useDisplay()
+
+const solving = ref(false)
 
 const delay = (millis) =>
     new Promise((resolve) => {
@@ -144,10 +153,12 @@ async function automove() {
 }
 
 async function solve() {
-    for (let i = 0; i < store.minTurns * 2; i++) {
+    solving.value = true
+    for (let i = 0; i < store.minMoves * 2; i++) {
         await automove()
         await delay(500)
     }
+    solving.value = false
 }
 
 async function startPlay() {

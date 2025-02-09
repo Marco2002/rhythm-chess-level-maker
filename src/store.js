@@ -26,7 +26,7 @@ export const useStore = defineStore("counter", () => {
     const flagRegion = ref([])
     const turn = ref("b")
     const winnable = ref("unkown")
-    const minTurns = ref(-1)
+    const minMoves = ref(-1)
     const moveCount = ref(0)
     const playMode = ref(false)
     const backupFen = ref("8/8/8/8/8/8/8/8")
@@ -183,7 +183,6 @@ export const useStore = defineStore("counter", () => {
         const to = namedFieldToNumberedField(move.substring(2, 4), width.value)
         const pos = position.value
         const piece = pos[from[1]][from[0]]
-        console.log(piece, from[1], from[0], to[1], to[0])
         if (
             piece === "a" ||
             (from[0] === to[0] && from[1] === to[1]) ||
@@ -199,16 +198,16 @@ export const useStore = defineStore("counter", () => {
     async function evaluate() {
         if (playMode.value) return
         winnable.value = "unkown"
-        minTurns.value = -1
+        minMoves.value = -1
         const config = getConfig.value
         requestEvaluate(config)
             .then((res) => {
                 winnable.value = res.winnable
-                minTurns.value = res.minTurns
+                minMoves.value = res.minMoves
             })
             .catch(() => {
                 winnable.value = false
-                minTurns.value = -1
+                minMoves.value = -1
             })
     }
 
@@ -332,7 +331,7 @@ export const useStore = defineStore("counter", () => {
         flagRegion,
         turn,
         winnable,
-        minTurns,
+        minMoves,
         moveCount,
         playMode,
         backupFen,

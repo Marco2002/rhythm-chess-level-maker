@@ -8,30 +8,56 @@
             <div
                 class="flex flex-col-reverse md:flex-row content-center justify-items-center items-center gap-4 w-full"
             >
-                <div class="flex items-center gap-4">
-                    <v-btn
-                        :icon="store.playMode ? 'mdi-restore' : 'mdi-play'"
-                        @click="store.playMode ? endPlay() : startPlay()"
-                        :color="store.playMode ? 'red' : 'primary'"
-                        :disabled="!store.playMode && store.winnable !== true"
-                        variant="outlined"
-                    ></v-btn>
-                    <v-btn
-                        size="large"
-                        rounded="xl"
-                        @click="automoveCpu"
-                        v-if="store.playMode"
-                        >CPU MOVE</v-btn
-                    >
-                    <v-btn
-                        size="large"
-                        rounded="xl"
-                        @click="solve"
-                        v-if="store.playMode"
-                        >SOLVE</v-btn
-                    >
+                <div class="flex flex-col gap-8">
+                    <div class="flex items-center gap-4">
+                        <v-btn
+                            :icon="store.playMode ? 'mdi-restore' : 'mdi-play'"
+                            @click="store.playMode ? endPlay() : startPlay()"
+                            :color="store.playMode ? 'red' : 'primary'"
+                            :disabled="
+                                !store.playMode && store.winnable !== true
+                            "
+                            @mousedown.prevent
+                            variant="outlined"
+                        ></v-btn>
+                        <v-btn
+                            size="large"
+                            rounded="xl"
+                            @click="automove"
+                            v-if="store.playMode"
+                            >AUTO</v-btn
+                        >
+                        <v-btn
+                            size="large"
+                            rounded="xl"
+                            @click="solve"
+                            v-if="store.playMode"
+                            >SOLVE</v-btn
+                        >
+                    </div>
+                    <div class="flex flex-col gap-4" v-if="store.playMode">
+                        <v-btn
+                            size="large"
+                            :variant="store.isCpuTurn ? 'elevated' : 'outlined'"
+                            color="red"
+                            rounded="xl"
+                            @mousedown.prevent
+                            @click="store.turn = 'w'"
+                            >CPU</v-btn
+                        >
+                        <v-btn
+                            size="large"
+                            :variant="
+                                store.isPlayerTurn ? 'elevated' : 'outlined'
+                            "
+                            color="green"
+                            rounded="xl"
+                            @mousedown.prevent
+                            @click="store.turn = 'b'"
+                            >PLAYER</v-btn
+                        >
+                    </div>
                 </div>
-
                 <div
                     class="flex grow flex-col-reverse gap-4 md:flex-row grow items-center justify-center md:mx-4"
                 >
@@ -109,9 +135,8 @@ const delay = (millis) =>
         setTimeout(() => resolve(), millis)
     })
 
-async function automoveCpu() {
+async function automove() {
     const res = await requestEvaluate(store.getConfig)
-    console.log("requested CPU move", store.getConfig, res)
     store.makeMove(res.bestMove)
 }
 
@@ -119,7 +144,7 @@ async function solve() {
     for (let i = 0; i < store.solution.length; i++) {
         store.makeMove(store.solution[i])
         await delay(500)
-        automoveCpu()
+        await automove()
         await delay(500)
     }
 }
@@ -150,7 +175,9 @@ const winnableColor = computed(() => {
 onMounted(() => {
     document.addEventListener("keydown", (event) => {
         if (event.code == "Space" && store.playMode) {
-            automoveCpu()
+            automove()
+        } else if (event.code == "ShiftLeft" && store.playMode) {
+            store.toggleTurn()
         }
     })
 })

@@ -24,6 +24,7 @@ export const useStore = defineStore("counter", () => {
     const position = ref(fenToPosition(fen.value, height.value, width.value))
     const disabledFields = ref([])
     const flagRegion = ref([])
+    const turn = ref("b")
     const winnable = ref("unkown")
     const minTurns = ref(-1)
     const solution = ref([])
@@ -59,7 +60,15 @@ export const useStore = defineStore("counter", () => {
             maxFile: width.value,
             disabledFields: getNamedDisabledFields.value,
             flagRegion: getNamedFlagRegion.value,
+            turn: turn.value,
         }
+    })
+
+    const isPlayerTurn = computed(() => {
+        return turn.value === "b"
+    })
+    const isCpuTurn = computed(() => {
+        return turn.value === "w"
     })
     // actions
     function setDisabledFields(fields) {
@@ -148,13 +157,19 @@ export const useStore = defineStore("counter", () => {
         }
     }
 
+    function toggleTurn() {
+        this.turn = this.turn === "w" ? "b" : "w"
+    }
+
     function play() {
         this.playMode = true
+        this.turn = "b"
         this.backupFen = this.fen
     }
 
     function reset() {
         this.playMode = false
+        this.turn = "b"
         this.fen = this.backupFen
     }
 
@@ -169,6 +184,7 @@ export const useStore = defineStore("counter", () => {
         pos[from[1]][from[0]] = "none"
         pos[to[1]][to[0]] = piece
         fen.value = positionToFen(pos)
+        this.toggleTurn()
     }
 
     async function evaluate() {
@@ -306,6 +322,7 @@ export const useStore = defineStore("counter", () => {
         position,
         disabledFields,
         flagRegion,
+        turn,
         winnable,
         minTurns,
         solution,
@@ -318,6 +335,8 @@ export const useStore = defineStore("counter", () => {
         getNamedDisabledFields,
         getNamedFlagRegion,
         getConfig,
+        isPlayerTurn,
+        isCpuTurn,
         selectedLevel,
         setup,
         setConfig,
@@ -327,6 +346,7 @@ export const useStore = defineStore("counter", () => {
         addPiece,
         toggleDisabled,
         toggleFlag,
+        toggleTurn,
         play,
         reset,
         makeMove,

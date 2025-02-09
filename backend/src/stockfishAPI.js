@@ -38,25 +38,22 @@ export default class StockfishInstance {
      * @param {object} config
      */
     async setConfig(config) {
-        console.log("config: ", config)
-        await makeIni(config)
+        const name = "RhythmChess" + Date.now()
+        await makeIni(config, name)
         await this.#run(async () => {
             this.fairyStockfish.stdin.write(
                 "load backend/output/variants.ini\n",
             )
             this.fairyStockfish.stdin.write("uci\n")
             this.fairyStockfish.stdin.write(
-                "setoption name UCI_Variant value 1RhythmChess\n",
+                `setoption name UCI_Variant value ${name}\n`,
             )
             this.fairyStockfish.stdin.write("ucinewgame\n")
             this.fairyStockfish.stdin.write("position startpos\n")
             return new Promise((resolve) => {
                 this.fairyStockfish.stdout.on("data", (data) => {
                     const dataString = data.toString()
-                    if (
-                        dataString.includes("info string variant 1RhythmChess")
-                    ) {
-                        console.log("config done")
+                    if (dataString.includes(`info string variant ${name}`)) {
                         resolve()
                     }
                 })
@@ -76,7 +73,6 @@ export default class StockfishInstance {
 
             return new Promise((resolve) => {
                 this.fairyStockfish.stdout.on("data", (data) => {
-                    console.log(data.toString())
                     if (data.toString().includes("info depth ")) {
                         const infoStrings = data
                             .toString()

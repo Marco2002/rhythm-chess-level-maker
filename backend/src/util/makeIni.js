@@ -1,6 +1,6 @@
 import fs from "fs"
 
-export default function makeIni(config) {
+export default function makeIni(config, variantName) {
     let mobilityRegion = ""
     for (let y = 0; y < config.maxRank; y++) {
         for (let x = 0; x < config.maxFile; x++) {
@@ -19,7 +19,7 @@ export default function makeIni(config) {
     })
     flagRegionString = flagRegionString.trim()
 
-    const variantsIni = `[1RhythmChess:chess]
+    const variantsIni = `[${variantName}:chess]
 customPiece1 = a:mcWceF
 customPiece2 = p:mfWcfF
 customPiece3 = b:F
@@ -48,7 +48,7 @@ passOnStalemateWhite = true
 maxRank = ${config.maxRank}
 maxFile = ${config.maxFile}
 
-startFen = ${config.fen} b - - 0 1`
+startFen = ${config.fen} ${config.turn} - - 0 1`
 
     return new Promise(function (resolve, reject) {
         fs.writeFile(

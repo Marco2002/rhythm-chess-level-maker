@@ -64,7 +64,7 @@ export default class StockfishInstance {
     /**
      * analyses the position for best move and if the position is winnable
      * @param {number} depth search depth
-     * @returns {object} result {bestMove: string, winnable: boolean, minTurns: number, solution: string[]}
+     * @returns {object} result {bestMove: string, winnable: boolean, minTurns: number}
      */
     async go(depth) {
         const result = {}
@@ -95,12 +95,6 @@ export default class StockfishInstance {
                                 result.minTurns = parseInt(
                                     lastScore.numberOfMoves,
                                 )
-                                result.solution = []
-                                for (let i = 0; i < result.minTurns; i++) {
-                                    result.solution.push(
-                                        s.split(" ")[19 + 2 * i].slice(0, 4),
-                                    )
-                                }
                             } else {
                                 result.winnable = false
                             }

@@ -8,6 +8,7 @@ export default async function generate(stockfishInstance, config) {
     let fensWhereWhiteSkips = []
     let currentFen
 
+    // TODO: generate solution and assert that the move count it is the same as inital evaluation
     const getMoveMatrix = () =>
         new Promise((resolve) => {
             function callNextInStack() {

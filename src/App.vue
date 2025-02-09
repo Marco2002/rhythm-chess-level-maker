@@ -41,8 +41,8 @@
                             :variant="store.isCpuTurn ? 'elevated' : 'outlined'"
                             color="red"
                             rounded="xl"
-                            @mousedown.prevent
-                            @click="store.turn = 'w'"
+                            @click.prevent
+                            class="pointer-events-none"
                             >CPU</v-btn
                         >
                         <v-btn
@@ -52,11 +52,14 @@
                             "
                             color="green"
                             rounded="xl"
-                            @mousedown.prevent
-                            @click="store.turn = 'b'"
+                            class="pointer-events-none"
+                            @click.prevent
                             >PLAYER</v-btn
                         >
                     </div>
+                    <p class="text-h5 text-center" v-if="store.playMode">
+                        Move Count : {{ store.moveCount }}
+                    </p>
                 </div>
                 <div
                     class="flex grow flex-col-reverse gap-4 md:flex-row grow items-center justify-center md:mx-4"
@@ -141,9 +144,7 @@ async function automove() {
 }
 
 async function solve() {
-    for (let i = 0; i < store.solution.length; i++) {
-        store.makeMove(store.solution[i])
-        await delay(500)
+    for (let i = 0; i < store.minTurns * 2; i++) {
         await automove()
         await delay(500)
     }
@@ -176,8 +177,12 @@ onMounted(() => {
     document.addEventListener("keydown", (event) => {
         if (event.code == "Space" && store.playMode) {
             automove()
-        } else if (event.code == "ShiftLeft" && store.playMode) {
-            store.toggleTurn()
+        } else if (
+            event.code == "ShiftLeft" &&
+            store.isPlayerTurn &&
+            store.playMode
+        ) {
+            store.makeMove("skip")
         }
     })
 })

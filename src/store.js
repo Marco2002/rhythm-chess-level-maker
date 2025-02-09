@@ -27,7 +27,7 @@ export const useStore = defineStore("counter", () => {
     const turn = ref("b")
     const winnable = ref("unkown")
     const minTurns = ref(-1)
-    const solution = ref([])
+    const moveCount = ref(0)
     const playMode = ref(false)
     const backupFen = ref("8/8/8/8/8/8/8/8")
     const drawerOpen = ref(true)
@@ -164,12 +164,14 @@ export const useStore = defineStore("counter", () => {
     function play() {
         this.playMode = true
         this.turn = "b"
+        this.moveCount = 0
         this.backupFen = this.fen
     }
 
     function reset() {
         this.playMode = false
         this.turn = "b"
+        this.moveCount = 0
         this.fen = this.backupFen
     }
 
@@ -181,6 +183,13 @@ export const useStore = defineStore("counter", () => {
         const to = namedFieldToNumberedField(move.substring(2, 4), width.value)
         const pos = position.value
         const piece = pos[from[1]][from[0]]
+        console.log(piece, from[1], from[0], to[1], to[0])
+        if (
+            piece === "a" ||
+            (from[0] === to[0] && from[1] === to[1]) ||
+            move === "skip"
+        )
+            this.moveCount++
         pos[from[1]][from[0]] = "none"
         pos[to[1]][to[0]] = piece
         fen.value = positionToFen(pos)
@@ -196,7 +205,6 @@ export const useStore = defineStore("counter", () => {
             .then((res) => {
                 winnable.value = res.winnable
                 minTurns.value = res.minTurns
-                solution.value = res.solution
             })
             .catch(() => {
                 winnable.value = false
@@ -325,7 +333,7 @@ export const useStore = defineStore("counter", () => {
         turn,
         winnable,
         minTurns,
-        solution,
+        moveCount,
         playMode,
         backupFen,
         drawerOpen,

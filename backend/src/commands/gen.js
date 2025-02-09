@@ -3,7 +3,7 @@ import csvToRcl from "../util/csvToRcl.js"
 
 export default async function generate(stockfishInstance, config) {
     const matrix = new Map()
-    const depth = 25
+    const depth = 40
     let callStack = []
     let fensWhereWhiteSkips = []
     let currentFen

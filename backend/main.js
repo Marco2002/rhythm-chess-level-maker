@@ -3,7 +3,6 @@ import fs from "fs"
 import https from "https"
 import http from "http" // For unencrypted ws
 import process from "node:process"
-import makeIni from "./src/util/makeIni.js"
 import evaluate from "./src/commands/evl.js"
 import saveLevel from "./src/saveLevel.js"
 import getLevels from "./src/getLevels.js"

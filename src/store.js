@@ -84,12 +84,13 @@ export const useStore = defineStore("counter", () => {
         flagRegion.value = []
         fields.forEach((field) =>
             flagRegion.value.push(
-                namedFieldToNumberedField(field, height.value),
+                namedFieldToNumberedField(field, width.value),
             ),
         )
     }
 
     function setConfig(config) {
+        console.log("setting conifg", config)
         updatingConfig = true
         levelName.value = config.levelName
         height.value = config.maxRank

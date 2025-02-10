@@ -50,12 +50,15 @@ export default function makeCsv(data) {
     jsonData.flagRegion.forEach(
         (flagField) => (flagRegionStr += " " + flagField),
     )
+    let solutionStr = ""
+    jsonData.solution.forEach((move) => (solutionStr += " " + move))
     flagRegionStr = flagRegionStr.trim()
     disabledFieldStr = disabledFieldStr.trim()
+    solutionStr = solutionStr.trim()
     return new Promise((resolve) => {
         const end = Date.now()
 
-        let csvContent = `${jsonData.maxRank},${jsonData.maxFile},${removeXfromFen(jsonData.fen)},${flagRegionStr},${disabledFieldStr}\n`
+        let csvContent = `${jsonData.maxRank},${jsonData.maxFile},${removeXfromFen(jsonData.fen)},${flagRegionStr},${disabledFieldStr},${solutionStr}\n`
         jsonData.matrix.forEach((value, key) => {
             csvContent += `${removeXfromFen(key)},${value}\n`
         })

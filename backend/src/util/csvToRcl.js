@@ -70,6 +70,16 @@ function encodeMove(move, maxRank, maxFile) {
     return encodedMove
 }
 
+function encodeMoves(movesStr, maxRank, maxFile) {
+    const moves = movesStr.split(" ")
+    const encodedMoves = []
+    moves.forEach((move) => {
+        encodedMoves.push(...encodeMove(move, maxRank, maxFile))
+    })
+    encodedMoves.push(15)
+    return encodedMoves
+}
+
 function encodeFile(csvData) {
     const lines = csvData.split("\n")
     const headerData = lines.shift().split(",")
@@ -83,6 +93,7 @@ function encodeFile(csvData) {
         ...encodeFen(headerData[2], maxFile), // encoded Fen
         ...encodeFields(headerData[3], maxRank, maxFile), // encoded flagRegion
         ...encodeFields(headerData[4], maxRank, maxFile), // encoded disabled fields
+        ...encodeMoves(headerData[5], maxRank, maxFile), // encoded solution
     ]
 
     // encode move matrix

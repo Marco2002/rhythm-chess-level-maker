@@ -82,7 +82,41 @@ export default async function generate(stockfishInstance, config) {
             })
         })
 
+    const getSoltuion = async () => {
+        stockfishInstance.reset()
+        const solution = []
+        let currentFen = (await stockfishInstance.position("startpos", "b")).fen
+
+        return new Promise((resolve) => {
+            async function handlePlayerTurn() {
+                const { bestMove } = await stockfishInstance.go(depth)
+                solution.push(bestMove)
+                currentFen = (
+                    await stockfishInstance.position(currentFen, "b", [
+                        bestMove,
+                    ])
+                ).fen
+                handleCpuTurn()
+            }
+
+            async function handleCpuTurn() {
+                const cpuMove = matrix.get(currentFen)
+                if (!cpuMove) {
+                    resolve(solution)
+                    return
+                }
+                currentFen = (
+                    await stockfishInstance.position(currentFen, "w", [cpuMove])
+                ).fen
+                handlePlayerTurn()
+            }
+
+            handlePlayerTurn()
+        })
+    }
+
     await getMoveMatrix()
+    config.solution = await getSoltuion()
     config.matrix = matrix
     await makeCsv(config)
     await csvToRcl(config.levelName)

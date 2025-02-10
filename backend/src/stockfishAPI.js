@@ -61,6 +61,11 @@ export default class StockfishInstance {
         })
     }
 
+    async reset() {
+        this.fairyStockfish.stdin.write("ucinewgame\n")
+        this.fairyStockfish.stdin.write("position startpos\n")
+    }
+
     /**
      * analyses the position for best move and if the position is winnable
      * @param {number} depth search depth

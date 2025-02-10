@@ -14,9 +14,6 @@
                             :icon="store.playMode ? 'mdi-restore' : 'mdi-play'"
                             @click="store.playMode ? endPlay() : startPlay()"
                             :color="store.playMode ? 'red' : 'primary'"
-                            :disabled="
-                                !store.playMode && store.winnable !== true
-                            "
                             @mousedown.prevent
                             variant="outlined"
                         ></v-btn>
@@ -25,6 +22,7 @@
                             color="success"
                             :variant="solving ? 'elevated' : 'outlined'"
                             @click="solve"
+                            :disabled="store.winnable !== true"
                             v-if="store.playMode"
                         ></v-btn>
                         <v-btn

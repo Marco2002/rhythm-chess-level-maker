@@ -39,7 +39,6 @@ function removeXfromFen(fen) {
 }
 
 export default function makeCsv(data) {
-    const start = Date.now()
     const jsonData = data
     let disabledFieldStr = ""
     jsonData.disabledFields.forEach(
@@ -56,8 +55,6 @@ export default function makeCsv(data) {
     disabledFieldStr = disabledFieldStr.trim()
     solutionStr = solutionStr.trim()
     return new Promise((resolve) => {
-        const end = Date.now()
-
         let csvContent = `${jsonData.maxRank},${jsonData.maxFile},${removeXfromFen(jsonData.fen)},${flagRegionStr},${disabledFieldStr},${solutionStr}\n`
         jsonData.matrix.forEach((value, key) => {
             csvContent += `${removeXfromFen(key)},${value}\n`
@@ -72,7 +69,6 @@ export default function makeCsv(data) {
                     return console.log(err)
                 }
                 console.log("csv successfully generated")
-                console.log(`execution time: ${end - start} ms`)
                 resolve()
             },
         )

@@ -2,6 +2,7 @@ import makeCsv from "../util/csvMaker.js"
 import csvToRcl from "../util/csvToRcl.js"
 
 export default async function generate(stockfishInstance, config) {
+    const start = Date.now()
     const matrix = new Map()
     const depth = 40
     let callStack = []
@@ -54,7 +55,6 @@ export default async function generate(stockfishInstance, config) {
 
             function handleGoResponse(response) {
                 const bestMove = response.bestMove
-                stockfishInstance.clearHash()
                 if (
                     bestMove.includes("(none)") ||
                     bestMove.substring(0, 2) == bestMove.substring(2, 4)
@@ -120,4 +120,6 @@ export default async function generate(stockfishInstance, config) {
     config.matrix = matrix
     await makeCsv(config)
     await csvToRcl(config.levelName)
+    const end = Date.now()
+    console.log("execution time: ", end - start)
 }

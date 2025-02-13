@@ -30,6 +30,7 @@ export default class StockfishInstance {
         }
         this.running = true
         await func()
+        this.fairyStockfish.stdout.removeAllListeners("data")
         this.running = false
     }
 

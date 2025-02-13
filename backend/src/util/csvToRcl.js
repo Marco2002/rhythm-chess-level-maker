@@ -51,6 +51,7 @@ function encodeField(field, maxRank, maxFile) {
 
 function encodeFields(fields, maxRank, maxFile) {
     const fieldsArr = fields.split(" ")
+    if (fieldsArr.length === 1 && fieldsArr[0] === "") return [15]
     let encodedFields = []
     fieldsArr.forEach((field) => {
         encodedFields = encodedFields.concat(

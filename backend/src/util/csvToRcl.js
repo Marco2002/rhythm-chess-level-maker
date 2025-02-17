@@ -106,9 +106,19 @@ function encodeFile(csvData) {
 
     // format in Uint8Array (combines two 4bit values into one 8bit value)
     const formatedData = new Uint8Array(Math.ceil(encodedData.length / 2.0))
-    for (let i = 0; i < encodedData.length; i++) {
+    for (let i = 0; i < formatedData.length - 1; i++) {
         const val = (encodedData[2 * i] << 4) + encodedData[2 * i + 1]
+
         formatedData[i] = val
+    }
+    // add last line
+    if (encodedData.length % 2 === 1) {
+        formatedData[formatedData.length - 1] =
+            encodedData[encodedData.length - 1] << 4
+    } else {
+        formatedData[formatedData.length - 1] =
+            (encodedData[encodedData.length - 2] << 4) +
+            encodedData[encodedData.length - 1]
     }
 
     return formatedData

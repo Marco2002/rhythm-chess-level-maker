@@ -160,6 +160,7 @@ export const useStore = defineStore("counter", () => {
 
     function toggleTurn() {
         this.turn = this.turn === "w" ? "b" : "w"
+        document.activeElement.blur()
     }
 
     function play() {
@@ -167,6 +168,7 @@ export const useStore = defineStore("counter", () => {
         this.turn = "b"
         this.moveCount = 0
         this.backupFen = this.fen
+        document.activeElement.blur()
     }
 
     function reset() {
@@ -184,14 +186,11 @@ export const useStore = defineStore("counter", () => {
         const to = namedFieldToNumberedField(move.substring(2, 4), width.value)
         const pos = position.value
         const piece = pos[from[1]][from[0]]
-        if (
-            piece === "a" ||
-            (from[0] === to[0] && from[1] === to[1]) ||
-            move === "skip"
-        )
-            this.moveCount++
-        pos[from[1]][from[0]] = "none"
-        pos[to[1]][to[0]] = piece
+        if (piece === "a" || move === "skip") this.moveCount++
+        if (move !== "skip") {
+            pos[from[1]][from[0]] = "none"
+            pos[to[1]][to[0]] = piece
+        }
         fen.value = positionToFen(pos)
         this.toggleTurn()
     }

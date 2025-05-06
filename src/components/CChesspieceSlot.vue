@@ -121,6 +121,7 @@ function handleChange(event) {
     // change the position
     if (!props.isFactory) {
         if (event.added) {
+            pieceArr.value[0] = event.added.element
             if (store.playMode && pieceArr.value[0].value === "a") {
                 emit("setPlayer")
             }

@@ -35,7 +35,7 @@
                         <v-btn
                             size="large"
                             rounded="xl"
-                            @click="automove"
+                            @click="store.makeMove('skip')"
                             v-if="store.playMode"
                             >PASS</v-btn
                         >

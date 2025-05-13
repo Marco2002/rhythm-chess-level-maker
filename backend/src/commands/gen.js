@@ -4,7 +4,7 @@ import csvToRcl from "../util/csvToRcl.js"
 export default async function generate(stockfishInstance, config) {
     const start = Date.now()
     const matrix = new Map()
-    const depth = 40
+    const depth = 50
     let callStack = []
     let fensWhereWhiteSkips = []
     let currentFen
@@ -93,10 +93,10 @@ export default async function generate(stockfishInstance, config) {
 
         return new Promise((resolve) => {
             async function handlePlayerTurn() {
+                stockfishInstance.clearHash()
                 const { bestMove, minMoves } = await stockfishInstance.go(depth)
                 if (!solutionLengthEstimate) solutionLengthEstimate = minMoves
                 solution.push(bestMove)
-                stockfishInstance.reset()
                 currentFen = (
                     await stockfishInstance.position(currentFen, "b", [
                         bestMove,

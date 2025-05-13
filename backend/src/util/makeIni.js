@@ -40,8 +40,6 @@ mobilityRegionWhiteCustomPiece5 = ${mobilityRegion}
 nFoldRule = 0
 nMoveRule = 0
 
-immobilityIllegal = true
-
 passBlack = true
 passOnStalemateWhite = true
 

@@ -55,11 +55,14 @@ export default async function generate(stockfishInstance, config) {
 
             function handleGoResponse(response) {
                 const bestMove = response.bestMove
-                if (
-                    bestMove.includes("(none)") ||
+                if (bestMove.includes("(none)")) {
+                    // if no move is possible, then player lost
+                    callNextInStack()
+                } else if (
                     bestMove.substring(0, 2) == bestMove.substring(2, 4)
                 ) {
                     if (!fensWhereWhiteSkips.includes(currentFen)) {
+                        matrix.set(currentFen, bestMove.slice(0, 4))
                         fensWhereWhiteSkips.push(currentFen)
                         stockfishInstance
                             .position(currentFen, "b")
@@ -84,13 +87,16 @@ export default async function generate(stockfishInstance, config) {
 
     const getSoltuion = async () => {
         stockfishInstance.reset()
+        let solutionLengthEstimate = 0
         const solution = []
         let currentFen = (await stockfishInstance.position("startpos", "b")).fen
 
         return new Promise((resolve) => {
             async function handlePlayerTurn() {
-                const { bestMove } = await stockfishInstance.go(depth)
+                const { bestMove, minMoves } = await stockfishInstance.go(depth)
+                if (!solutionLengthEstimate) solutionLengthEstimate = minMoves
                 solution.push(bestMove)
+                stockfishInstance.reset()
                 currentFen = (
                     await stockfishInstance.position(currentFen, "b", [
                         bestMove,
@@ -102,6 +108,16 @@ export default async function generate(stockfishInstance, config) {
             async function handleCpuTurn() {
                 const cpuMove = matrix.get(currentFen)
                 if (!cpuMove) {
+                    if (solution.length !== solutionLengthEstimate) {
+                        console.error(
+                            "solution length not the same as estimate",
+                        )
+                    }
+                    console.log("solution length: ", solution.length)
+                    console.log(
+                        "solution length estimate: ",
+                        solutionLengthEstimate,
+                    )
                     resolve(solution)
                     return
                 }
